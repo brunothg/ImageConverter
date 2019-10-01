@@ -1,10 +1,10 @@
 package propra.imageconverter;
 
-import java.awt.image.BufferedImage;
 import java.nio.file.Files;
 
 import propra.imageconverter.codecs.ConversionException;
 import propra.imageconverter.codecs.ImageCodec;
+import propra.imageconverter.codecs.InternalImage;
 import propra.imageconverter.codecs.internal.PngCodec;
 import propra.imageconverter.codecs.propra.PropraCodec;
 import propra.imageconverter.codecs.tga.TgaCodec;
@@ -49,7 +49,7 @@ public class ImageConverter {
 		final ImageCodec inputCodec = getCodec(parameters.getInputFileExtension());
 		final ImageCodec outputCodec = getCodec(parameters.getOutputFileExtension());
 
-		final BufferedImage image = inputCodec.readImage(Files.newInputStream(parameters.getInputFile()));
+		final InternalImage image = inputCodec.readImage(Files.newInputStream(parameters.getInputFile()));
 		outputCodec.writeImage(image, Files.newOutputStream(parameters.getOutputFile()));
 	}
 

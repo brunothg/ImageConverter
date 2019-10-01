@@ -1,6 +1,5 @@
 package propra.imageconverter.codecs;
 
-import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -19,7 +18,7 @@ public interface ImageCodec {
 	 * @return Das eingelesene Bild
 	 * @throws ConversionException wenn ein Konvertierungsfehler auftritt
 	 */
-	public BufferedImage readImage(InputStream in) throws ConversionException;
+	public InternalImage readImage(InputStream in) throws ConversionException;
 
 	/**
 	 * Schreibt ein Bild in einen {@link OutputStream}
@@ -28,7 +27,7 @@ public interface ImageCodec {
 	 * @param out   {@link OutputStream} zum Schreiben des Bildes
 	 * @throws ConversionException wenn ein Konvertierungsfehler auftritt
 	 */
-	public void writeImage(BufferedImage image, OutputStream out) throws ConversionException;
+	public void writeImage(InternalImage image, OutputStream out) throws ConversionException;
 
 	/**
 	 * Gibt die Dateiendung des Codecs (z.B. tga oder propra)
