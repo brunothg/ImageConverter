@@ -24,10 +24,8 @@ public class PropraChecksum {
 			data = new byte[0];
 		}
 
-		final long bn = calculateBi(data.length, data);
-
 		final long an = calculateAn(data.length, data);
-
+		final long bn = calculateBi(data.length, data);
 		final long p = (an * ((long) Math.pow(2, 16))) + bn;
 
 		return p;
@@ -56,14 +54,21 @@ public class PropraChecksum {
 	 * verwiesen.
 	 *
 	 * @param i
-	 * @param data
+	 * @param an {@link #calculateAn(int, byte[])}
 	 * @return
 	 */
 	private static long calculateBi(int i, byte[] data) {
-		if (i == 0) {
-			return 1;
+
+		long bi = 1; // Initialisiere mit b0=1
+		// Berechne alle weiteren Schritte bis bi
+		for (int j = 1; j <= i; j++) {
+			bi = Math.abs(bi + calculateAn(j, data)) % X;
 		}
 
-		return Math.abs(calculateBi(i - 1, data) + calculateAn(i, data)) % X;
+		return bi;
+
+		// Kann alternativ auch rekursiv gelößt werden, ist kürzer aber ineffizient
+		// return (i==0)?1:Math.abs(calculateBi(i-1, data)+calculateAn(i, data))%X;
 	}
+
 }
