@@ -9,6 +9,12 @@ import propra.imageconverter.codecs.ConversionException;
 import propra.imageconverter.codecs.ImageCodec;
 import propra.imageconverter.codecs.InternalImage;
 
+/**
+ * Codec für PNGs
+ * 
+ * @author marvin
+ *
+ */
 public class PngCodec implements ImageCodec {
 
 	private static final String FILE_EXTENSION = "png";
