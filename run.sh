@@ -38,3 +38,5 @@ java -Xmx256m propra.imageconverter.ImageConverter --input=../KE1_TestBilder/tes
 java -Xmx256m propra.imageconverter.ImageConverter --input=../KE1_TestBilder/test_04_uncompressed.propra --output=../KE1_Konvertiert/test_04.png &
 
 wait
+
+java -Xmx256m propra.imageconverter.ImageConverter --output=../KE1_TestBilder/test_03_uncompressed2.propra --input=../KE1_Konvertiert/test_03.png

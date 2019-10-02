@@ -18,35 +18,41 @@ import propra.imageconverter.codecs.InternalImage;
  */
 public class PropraCodec implements ImageCodec {
 
-    public static final String FILE_IDENTIFIER = "ProPraWS19";
+	public static final String FILE_IDENTIFIER = "ProPraWS19";
 
-    /**
-     * Erlaubte Werte für die Pixelauflösung (Bits pro Bildpunkt)
-     */
-    public static final int[] PIXEL_RESOLUTIONS = { 24 };
+	/**
+	 * Erlaubte Werte für die Pixelauflösung (Bits pro Bildpunkt)
+	 */
+	public static final int[] PIXEL_RESOLUTIONS = { 24 };
 
-    private static final String FILE_EXTENSION = "propra";
+	private static final String FILE_EXTENSION = "propra";
 
-    @Override
-    public InternalImage readImage(InputStream in) throws ConversionException {
-	final PropraReader reader = new PropraReader(in);
-	final InternalImage image = reader.readImage();
-	try {
-	    reader.close();
-	} catch (final IOException e) {
-	    // Close quietly
+	@Override
+	public InternalImage readImage(InputStream in) throws ConversionException {
+		final PropraReader reader = new PropraReader(in);
+		final InternalImage image = reader.readImage();
+		try {
+			reader.close();
+		} catch (final IOException e) {
+			// Close quietly
+		}
+		return image;
 	}
-	return image;
-    }
 
-    @Override
-    public void writeImage(InternalImage image, OutputStream out) throws ConversionException {
-	// TODO writeImage
-    }
+	@Override
+	public void writeImage(InternalImage image, OutputStream out) throws ConversionException {
+		final PropraWriter writer = new PropraWriter(out);
+		writer.writeImage(image);
+		try {
+			writer.close();
+		} catch (final IOException e) {
+			// Close quietly
+		}
+	}
 
-    @Override
-    public String getFileExtension() {
-	return FILE_EXTENSION;
-    }
+	@Override
+	public String getFileExtension() {
+		return FILE_EXTENSION;
+	}
 
 }
