@@ -12,6 +12,7 @@ import java.util.Objects;
 
 import propra.imageconverter.codecs.ConversionException;
 import propra.imageconverter.codecs.InternalImage;
+import propra.imageconverter.codecs.propra.Compression.PixelCompressionValues;
 import propra.imageconverter.utils.ByteInputStream;
 
 /**
@@ -54,7 +55,33 @@ public class PropraReader implements Closeable {
 
 	final long checksum = readChecksum();
 
-	return null;
+	final Compression compression = compressionType.createCompressionInstance();
+	PixelCompressionValues compressionValues = new PixelCompressionValues();
+	compressionValues.checksum = checksum;
+	compressionValues.dimension = dimension;
+	compressionValues.pixelResolution = pixelResolution;
+	compressionValues.compressedPixelData = readCompressedPixelData(pixelDataSize);
+	compressionValues = compression.uncompressPixelData(compressionValues);
+
+	final InternalImage internalImage = new InternalImage();
+	internalImage.setPixelData(compressionValues.uncompressedPixelData);
+	return internalImage;
+    }
+
+    private byte[] readCompressedPixelData(BigInteger pixelDataSize) throws ConversionException {
+	final int pixelDataLength = pixelDataSize.intValueExact();
+
+	final byte[] buffer = new byte[pixelDataLength];
+	try {
+	    final int read = this.in.read(buffer);
+	    if (read != pixelDataLength) {
+		throw new ConversionException("Pixeldaten nicht vollständig");
+	    }
+	} catch (final IOException e) {
+	    throw new ConversionException("Die Pixeldaten konnten nicht gelesen werden: " + e.getMessage(), e);
+	}
+
+	return buffer;
     }
 
     private long readChecksum() throws ConversionException {
