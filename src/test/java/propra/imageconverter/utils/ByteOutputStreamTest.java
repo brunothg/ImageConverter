@@ -3,6 +3,7 @@ package propra.imageconverter.utils;
 import static org.junit.Assert.assertArrayEquals;
 
 import java.io.ByteArrayOutputStream;
+import java.math.BigInteger;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -79,5 +80,35 @@ public class ByteOutputStreamTest {
 
 		final byte[] bytes = outBuffer.toByteArray();
 		assertArrayEquals(new byte[] { (byte) 255 }, bytes);
+	}
+
+	@Test
+	public void testWriteUnsignedNumber() throws Exception {
+		final String test = "18446744073709551615"; // 0xFFFFFFFFFFFFFFFF
+
+		final ByteArrayOutputStream outBuffer = new ByteArrayOutputStream(1);
+		final ByteOutputStream outputStream = new ByteOutputStream(outBuffer, ByteOrder.LITTLE_ENDIAN);
+		outputStream.writeOrderedUnsinedNumber(new BigInteger(test), 8);
+		outputStream.close();
+
+		final byte[] bytes = outBuffer.toByteArray();
+		System.out.println(Arrays.toString(bytes));
+		assertArrayEquals(new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+				(byte) 0xff, (byte) 0xff }, bytes);
+	}
+
+	@Test
+	public void testWriteUnsignedNumber2() throws Exception {
+		final String test = "1152921504606846975"; // 0x0FFFFFFFFFFFFFFF
+
+		final ByteArrayOutputStream outBuffer = new ByteArrayOutputStream(1);
+		final ByteOutputStream outputStream = new ByteOutputStream(outBuffer, ByteOrder.LITTLE_ENDIAN);
+		outputStream.writeOrderedUnsinedNumber(new BigInteger(test), 8);
+		outputStream.close();
+
+		final byte[] bytes = outBuffer.toByteArray();
+		System.out.println(Arrays.toString(bytes));
+		assertArrayEquals(new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+				(byte) 0xff, (byte) 0x0f }, bytes);
 	}
 }

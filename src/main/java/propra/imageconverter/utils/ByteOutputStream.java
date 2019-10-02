@@ -3,6 +3,7 @@ package propra.imageconverter.utils;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -87,22 +88,26 @@ public class ByteOutputStream extends OutputStream implements Closeable {
 	public void writeUnsignedByte(int unsignedByte) throws IOException {
 		this.out.write(unsignedByte);
 	}
-//
-//	/**
-//	 * Liest eine vorzeichenlose Zahl
-//	 *
-//	 * @param length Anzahl der Bytes
-//	 * @return Die vorzeichenlose Zahl
-//	 * @throws IOException
-//	 */
-//	public BigInteger readOrderedUnsinedNumber(int length) throws IOException {
-//		final byte[] bytes = this.readOrderedBytes(length);
-//		if (bytes.length != length) {
-//			throw new IOException("Nicht genügend bytes vorhanden");
-//		}
-//
-//		return new BigInteger(1, bytes);
-//	}
+
+	/**
+	 * Schreibt eine vorzeichenlose Zahl
+	 *
+	 * @param number Vorzeichenlose Zahl
+	 * @param length Anzahl der Bytes
+	 * @throws IOException
+	 */
+	public void writeOrderedUnsinedNumber(BigInteger number, int length) throws IOException {
+		byte[] unsignedNumberBytes = number.toByteArray();
+
+		if (unsignedNumberBytes.length > length) {
+			unsignedNumberBytes = Arrays.copyOfRange(unsignedNumberBytes, unsignedNumberBytes.length - length,
+					unsignedNumberBytes.length);
+		} else if (unsignedNumberBytes.length < length) {
+			unsignedNumberBytes = Arrays.copyOf(unsignedNumberBytes, length);
+		}
+
+		this.writeOrderedBytes(unsignedNumberBytes);
+	}
 
 	/**
 	 * Schreibt das angegebene Byte-Array
