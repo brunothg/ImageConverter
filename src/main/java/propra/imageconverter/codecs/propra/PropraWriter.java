@@ -66,7 +66,7 @@ public class PropraWriter implements Closeable {
 	}
 
 	private void writePixelData(byte[] compressedPixelData) throws ConversionException {
-		this.out.setByteOrder(ByteOrder.LITTLE_ENDIAN);
+		this.out.setByteOrder(ByteOrder.BIG_ENDIAN);
 		try {
 			this.out.writeOrderedBytes(compressedPixelData);
 		} catch (final IOException e) {
