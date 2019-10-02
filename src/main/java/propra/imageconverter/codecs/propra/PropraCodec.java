@@ -1,5 +1,6 @@
 package propra.imageconverter.codecs.propra;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -19,12 +20,23 @@ public class PropraCodec implements ImageCodec {
 
     public static final String FILE_IDENTIFIER = "ProPraWS19";
 
+    /**
+     * Erlaubte Werte für die Pixelauflösung (Bits pro Bildpunkt)
+     */
+    public static final int[] PIXEL_RESOLUTIONS = { 24 };
+
     private static final String FILE_EXTENSION = "propra";
 
     @Override
     public InternalImage readImage(InputStream in) throws ConversionException {
 	final PropraReader reader = new PropraReader(in);
-	return reader.readImage();
+	final InternalImage image = reader.readImage();
+	try {
+	    reader.close();
+	} catch (final IOException e) {
+	    // Close quietly
+	}
+	return image;
     }
 
     @Override
