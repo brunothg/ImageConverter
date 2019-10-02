@@ -20,13 +20,13 @@ public class ByteOutputStreamTest {
 
 		ByteArrayOutputStream outBuffer = new ByteArrayOutputStream(test.length());
 		ByteOutputStream outputStream = new ByteOutputStream(outBuffer, ByteOrder.LITTLE_ENDIAN);
-		outputStream.writeOrderedString(test, StandardCharsets.UTF_8);
+		outputStream.writeOrderedString(test, StandardCharsets.UTF_8, 4);
 		outputStream.close();
 		assertArrayEquals(bytesLittleEndian, outBuffer.toByteArray());
 
 		outBuffer = new ByteArrayOutputStream(test.length());
 		outputStream = new ByteOutputStream(outBuffer, ByteOrder.BIG_ENDIAN);
-		outputStream.writeOrderedString(test, StandardCharsets.UTF_8);
+		outputStream.writeOrderedString(test, StandardCharsets.UTF_8, 4);
 		outputStream.close();
 		assertArrayEquals(bytesBigEndian, outBuffer.toByteArray());
 	}
@@ -92,7 +92,6 @@ public class ByteOutputStreamTest {
 		outputStream.close();
 
 		final byte[] bytes = outBuffer.toByteArray();
-		System.out.println(Arrays.toString(bytes));
 		assertArrayEquals(new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 				(byte) 0xff, (byte) 0xff }, bytes);
 	}
@@ -107,7 +106,6 @@ public class ByteOutputStreamTest {
 		outputStream.close();
 
 		final byte[] bytes = outBuffer.toByteArray();
-		System.out.println(Arrays.toString(bytes));
 		assertArrayEquals(new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 				(byte) 0xff, (byte) 0x0f }, bytes);
 	}

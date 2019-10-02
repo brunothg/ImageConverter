@@ -79,7 +79,12 @@ public class PropraReader implements Closeable {
 	}
 
 	private byte[] readCompressedPixelData(BigInteger pixelDataSize) throws ConversionException {
-		final int pixelDataLength = pixelDataSize.intValueExact();
+		int pixelDataLength;
+		try {
+			pixelDataLength = pixelDataSize.intValueExact();
+		} catch (final ArithmeticException e) {
+			throw new ConversionException("Die Bildgröße ist zu groß: " + e.getMessage(), e);
+		}
 
 		final byte[] buffer = new byte[pixelDataLength];
 		try {
@@ -110,7 +115,7 @@ public class PropraReader implements Closeable {
 			final BigInteger pixelDataSize = this.in.readOrderedUnsinedNumber(8);
 			return pixelDataSize;
 		} catch (final IOException e) {
-			throw new ConversionException("Das Pixeldatengröße konnte nicht gelesen werden: " + e.getMessage(), e);
+			throw new ConversionException("Die Pixeldatengröße konnte nicht gelesen werden: " + e.getMessage(), e);
 		}
 	}
 

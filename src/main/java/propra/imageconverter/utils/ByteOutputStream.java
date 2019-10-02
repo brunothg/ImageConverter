@@ -49,10 +49,11 @@ public class ByteOutputStream extends OutputStream implements Closeable {
 	 *
 	 * @param string  Der String zum Schreiben
 	 * @param charset Das verwendete Charset
+	 * @param length  Anzahl der Bytes, die geschrieben werden
 	 * @throws IOException
 	 */
-	public void writeOrderedString(String string, Charset charset) throws IOException {
-		this.writeOrderedBytes(string.getBytes(charset));
+	public void writeOrderedString(String string, Charset charset, int length) throws IOException {
+		this.writeOrderedBytes(Arrays.copyOf(string.getBytes(charset), length));
 	}
 
 	/**
@@ -103,7 +104,9 @@ public class ByteOutputStream extends OutputStream implements Closeable {
 			unsignedNumberBytes = Arrays.copyOfRange(unsignedNumberBytes, unsignedNumberBytes.length - length,
 					unsignedNumberBytes.length);
 		} else if (unsignedNumberBytes.length < length) {
+			reverse(unsignedNumberBytes);
 			unsignedNumberBytes = Arrays.copyOf(unsignedNumberBytes, length);
+			reverse(unsignedNumberBytes);
 		}
 
 		this.writeOrderedBytes(unsignedNumberBytes);
