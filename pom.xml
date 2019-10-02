@@ -9,6 +9,7 @@
 
 	<properties>
 		<maven.compiler.release>11</maven.compiler.release>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<dependencies>
@@ -30,6 +31,21 @@
 				<version>3.8.0</version>
 				<configuration>
 					<release>${maven.compiler.release}</release>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<additionalConfig>
+						<file>
+							<name>.settings/org.eclipse.core.resources.prefs</name>
+							<content>
+                <![CDATA[eclipse.preferences.version=1${line.separator}encoding/<project>=${project.build.sourceEncoding}${line.separator}]]>
+							</content>
+						</file>
+					</additionalConfig>
 				</configuration>
 			</plugin>
 		</plugins>
