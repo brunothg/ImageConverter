@@ -1,32 +1,61 @@
 package propra.imageconverter.codecs;
 
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
 /**
- * Interne Repräsentation eines bildes
+ * Interne Repräsentation eines Bildes
  *
  * @author marvin
  *
  */
 public class InternalImage {
 
-	private BufferedImage pixelData;
+    /**
+     * Interne Pixeldatendarstellung
+     */
+    private BufferedImage pixelData;
 
-	public InternalImage() {
+    public InternalImage() {
+    }
+
+    public InternalImage(BufferedImage pixelData) {
+	this();
+
+	this.setPixelData(pixelData);
+    }
+
+    /**
+     * Gibt die Pixeldaten als BufferedImage. Kann null sein.
+     * 
+     * @return Die Pixeldaten oder null, wenn nicht vorhanden
+     */
+    public BufferedImage getPixelData() {
+	return this.pixelData;
+    }
+
+    /**
+     * Setzt die Pixeldaten
+     * 
+     * @param pixelData Die neuen Pixeldaten
+     */
+    public void setPixelData(BufferedImage pixelData) {
+	this.pixelData = pixelData;
+    }
+
+    /**
+     * Gibt die Maße des Bildes. Kann null sein.
+     * 
+     * @return Die Dimension des Bilder oder null, wenn keine Bilddaten vorhanden
+     *         sind
+     */
+    public Dimension getSize() {
+	final BufferedImage data = getPixelData();
+	if (data == null) {
+	    return null;
 	}
 
-	public InternalImage(BufferedImage pixelData) {
-		this();
-
-		this.setPixelData(pixelData);
-	}
-
-	public BufferedImage getPixelData() {
-		return this.pixelData;
-	}
-
-	public void setPixelData(BufferedImage pixelData) {
-		this.pixelData = pixelData;
-	}
+	return new Dimension(data.getWidth(), data.getHeight());
+    }
 
 }

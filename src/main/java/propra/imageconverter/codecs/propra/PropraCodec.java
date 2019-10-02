@@ -17,25 +17,24 @@ import propra.imageconverter.codecs.InternalImage;
  */
 public class PropraCodec implements ImageCodec {
 
-	public static final String FILE_IDENTIFIER = "ProPraWS19";
+    public static final String FILE_IDENTIFIER = "ProPraWS19";
 
-	private static final String FILE_EXTENSION = "propra";
+    private static final String FILE_EXTENSION = "propra";
 
-	@Override
-	public InternalImage readImage(InputStream in) throws ConversionException {
-		// TODO readImage
-		return null;
-	}
+    @Override
+    public InternalImage readImage(InputStream in) throws ConversionException {
+	final PropraReader reader = new PropraReader(in);
+	return reader.readImage();
+    }
 
-	@Override
-	public void writeImage(InternalImage image, OutputStream out) throws ConversionException {
-		// TODO writeImage
+    @Override
+    public void writeImage(InternalImage image, OutputStream out) throws ConversionException {
+	// TODO writeImage
+    }
 
-	}
-
-	@Override
-	public String getFileExtension() {
-		return FILE_EXTENSION;
-	}
+    @Override
+    public String getFileExtension() {
+	return FILE_EXTENSION;
+    }
 
 }
