@@ -43,6 +43,9 @@ public class PropraReader implements Closeable {
 		}
 
 		final Dimension dimension = this.readDimension();
+		if ((dimension.height <= 0) || (dimension.width <= 0)) {
+			throw new ConversionException("Nullgröße nicht erlaubt: " + dimension.toString());
+		}
 
 		final int pixelResolution = this.readPixelResolution();
 		if (!Arrays.stream(PropraCodec.PIXEL_RESOLUTIONS).anyMatch(Integer.valueOf(pixelResolution)::equals)) {
@@ -60,6 +63,11 @@ public class PropraReader implements Closeable {
 			throw new ConversionException("Prüfsumme stimmt nicht überein");
 		}
 
+		// Es dürften keine weiteren Bytes mehr vorhanden sein
+		if (!this.checkEndOfStream()) {
+			throw new ConversionException("Weitere Daten nach dem Bild gefunden");
+		}
+
 		final Compression compression = compressionType.createCompressionInstance();
 		PixelCompressionValues compressionValues = new PixelCompressionValues();
 		compressionValues.dimension = dimension;
@@ -70,6 +78,23 @@ public class PropraReader implements Closeable {
 		final InternalImage internalImage = new InternalImage();
 		internalImage.setPixelData(compressionValues.uncompressedPixelData);
 		return internalImage;
+	}
+
+	/**
+	 * Überprüft, ob das Ende des Streams erreicht wurde. Vorsicht - hierfür wird
+	 * versucht ein Byte zu lesen - sollte nicht benutzt werden, wenn weitere bytes
+	 * gelesen werden sollen (Schluckt ggf. ein byte).
+	 *
+	 * @return true, wenn das Ende erreicht wurde und keine weiteren Bytes verfügbar
+	 *         sind.
+	 * @throws ConversionException
+	 */
+	private boolean checkEndOfStream() throws ConversionException {
+		try {
+			return this.in.read() < 0;
+		} catch (final IOException e) {
+			throw new ConversionException("EOF konnte nicht geprüft werden: " + e.getMessage(), e);
+		}
 	}
 
 	private boolean checkChecksum(long checksum, byte[] compressedPixelData) {
