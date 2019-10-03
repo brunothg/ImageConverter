@@ -45,6 +45,33 @@ public class TgaRgbCompression extends TgaCompression {
 		return values;
 	}
 
+	@Override
+	public PixelCompressionValues compressPixelData(PixelCompressionValues values) throws ConversionException {
+		final ByteArrayOutputStream out = new ByteArrayOutputStream(
+				values.dimension.width * values.dimension.height * 3);
+	
+		this.pixelLoop(values, (point) -> {
+			final int rgb = values.uncompressedPixelData.getRGB(point.x, point.y);
+			final Color color = new Color(rgb);
+	
+			try {
+				out.write(new byte[] { (byte) color.getBlue(), (byte) color.getGreen(), (byte) color.getRed() });
+			} catch (final IOException e) {
+				return new ConversionException("Pixeldaten können nicht geschrieben werden: " + e.getMessage(), e);
+			}
+	
+			return null;
+		});
+	
+		try {
+			out.close();
+		} catch (final IOException e) {
+		}
+	
+		values.compressedPixelData = out.toByteArray();
+		return values;
+	}
+
 	/**
 	 * Hilfsfunktion, um die verschiedenen Origins zu handhaben
 	 *
@@ -121,33 +148,6 @@ public class TgaRgbCompression extends TgaCompression {
 		}
 
 		return null;
-	}
-
-	@Override
-	public PixelCompressionValues compressPixelData(PixelCompressionValues values) throws ConversionException {
-		final ByteArrayOutputStream out = new ByteArrayOutputStream(
-				values.dimension.width * values.dimension.height * 3);
-
-		this.pixelLoop(values, (point) -> {
-			final int rgb = values.uncompressedPixelData.getRGB(point.x, point.y);
-			final Color color = new Color(rgb);
-
-			try {
-				out.write(new byte[] { (byte) color.getBlue(), (byte) color.getGreen(), (byte) color.getRed() });
-			} catch (final IOException e) {
-				return new ConversionException("Pixeldaten können nicht geschrieben werden: " + e.getMessage(), e);
-			}
-
-			return null;
-		});
-
-		try {
-			out.close();
-		} catch (final IOException e) {
-		}
-
-		values.compressedPixelData = out.toByteArray();
-		return values;
 	}
 
 }
