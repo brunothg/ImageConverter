@@ -69,7 +69,7 @@ public class ByteInputStream extends InputStream implements Closeable {
 	 * @return Vorzeichenlose 16Bit (2byte) Zahl
 	 * @throws IOException
 	 */
-	public int readOrderedUnsinedShort() throws IOException {
+	public int readOrderedUnsignedShort() throws IOException {
 		final byte[] bytes = this.readOrderedBytes(2);
 		if (bytes.length != 2) {
 			throw new IOException("Nicht genügend bytes vorhanden");
@@ -85,7 +85,7 @@ public class ByteInputStream extends InputStream implements Closeable {
 	 * @return Vorzeichenlose 32Bit (4byte) Zahl
 	 * @throws IOException
 	 */
-	public long readOrderedUnsinedInt() throws IOException {
+	public long readOrderedUnsignedInt() throws IOException {
 		final byte[] bytes = this.readOrderedBytes(4);
 		if (bytes.length != 4) {
 			throw new IOException("Nicht genügend bytes vorhanden");
@@ -116,7 +116,7 @@ public class ByteInputStream extends InputStream implements Closeable {
 	 * @return Die vorzeichenlose Zahl
 	 * @throws IOException
 	 */
-	public BigInteger readOrderedUnsinedNumber(int length) throws IOException {
+	public BigInteger readOrderedUnsignedNumber(int length) throws IOException {
 		final byte[] bytes = this.readOrderedBytes(length);
 		if (bytes.length != length) {
 			throw new IOException("Nicht genügend bytes vorhanden");

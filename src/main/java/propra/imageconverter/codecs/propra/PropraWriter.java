@@ -79,7 +79,7 @@ public class PropraWriter implements Closeable {
 	private void writeChecksum(long checksum) throws ConversionException {
 		this.out.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 		try {
-			this.out.writeOrderedUnsinedInt(checksum);
+			this.out.writeOrderedUnsignedInt(checksum);
 		} catch (final IOException e) {
 			throw new ConversionException("Prüfsumme konnte nicht geschrieben werden: " + e.getMessage(), e);
 		}
@@ -88,7 +88,7 @@ public class PropraWriter implements Closeable {
 	private void writePixelDataSize(BigInteger pixelDataSize) throws ConversionException {
 		this.out.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 		try {
-			this.out.writeOrderedUnsinedNumber(pixelDataSize, 8);
+			this.out.writeOrderedUnsignedNumber(pixelDataSize, 8);
 		} catch (final IOException e) {
 			throw new ConversionException("Pixeldatengröße konnte nicht geschrieben werden: " + e.getMessage(), e);
 		}
@@ -114,8 +114,8 @@ public class PropraWriter implements Closeable {
 	private void writeDimension(Dimension size) throws ConversionException {
 		this.out.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 		try {
-			this.out.writeOrderedUnsinedShort(size.width);
-			this.out.writeOrderedUnsinedShort(size.height);
+			this.out.writeOrderedUnsignedShort(size.width);
+			this.out.writeOrderedUnsignedShort(size.height);
 		} catch (final IOException e) {
 			throw new ConversionException("Dimension konnte nicht geschrieben werden: " + e.getMessage(), e);
 		}

@@ -127,7 +127,7 @@ public class PropraReader implements Closeable {
 	private long readChecksum() throws ConversionException {
 		this.in.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 		try {
-			final long checksum = this.in.readOrderedUnsinedInt();
+			final long checksum = this.in.readOrderedUnsignedInt();
 			return checksum;
 		} catch (final IOException e) {
 			throw new ConversionException("Die Prüfsumme konnte nicht gelesen werden: " + e.getMessage(), e);
@@ -137,7 +137,7 @@ public class PropraReader implements Closeable {
 	private BigInteger readPixelDataSize() throws ConversionException {
 		this.in.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 		try {
-			final BigInteger pixelDataSize = this.in.readOrderedUnsinedNumber(8);
+			final BigInteger pixelDataSize = this.in.readOrderedUnsignedNumber(8);
 			return pixelDataSize;
 		} catch (final IOException e) {
 			throw new ConversionException("Die Pixeldatengröße konnte nicht gelesen werden: " + e.getMessage(), e);
@@ -174,8 +174,8 @@ public class PropraReader implements Closeable {
 		int width;
 		int height;
 		try {
-			width = this.in.readOrderedUnsinedShort();
-			height = this.in.readOrderedUnsinedShort();
+			width = this.in.readOrderedUnsignedShort();
+			height = this.in.readOrderedUnsignedShort();
 		} catch (final IOException e) {
 			throw new ConversionException("Die Bildabmessung konnte nicht gelesen werden: " + e.getMessage(), e);
 		}

@@ -63,7 +63,7 @@ public class ByteOutputStream extends OutputStream implements Closeable {
 	 * @param unsignedShort Vorzeichenlose 16Bit (2byte) Zahl
 	 * @throws IOException
 	 */
-	public void writeOrderedUnsinedShort(int unsignedShort) throws IOException {
+	public void writeOrderedUnsignedShort(int unsignedShort) throws IOException {
 		final byte[] unsignedShortBytes = { (byte) (unsignedShort >> 8), (byte) unsignedShort }; // Nur die unteren 2
 		this.writeOrderedBytes(unsignedShortBytes);
 	}
@@ -75,7 +75,7 @@ public class ByteOutputStream extends OutputStream implements Closeable {
 	 * @param unsignedInt Vorzeichenlose 32Bit (4byte) Zahl
 	 * @throws IOException
 	 */
-	public void writeOrderedUnsinedInt(long unsignedInt) throws IOException {
+	public void writeOrderedUnsignedInt(long unsignedInt) throws IOException {
 		final byte[] unsignedIntBytes = { (byte) (unsignedInt >> 24), (byte) (unsignedInt >> 16),
 				(byte) (unsignedInt >> 8), (byte) unsignedInt }; // Nur die unteren 4
 		this.writeOrderedBytes(unsignedIntBytes);
@@ -97,7 +97,7 @@ public class ByteOutputStream extends OutputStream implements Closeable {
 	 * @param length Anzahl der Bytes
 	 * @throws IOException
 	 */
-	public void writeOrderedUnsinedNumber(BigInteger number, int length) throws IOException {
+	public void writeOrderedUnsignedNumber(BigInteger number, int length) throws IOException {
 		byte[] unsignedNumberBytes = number.toByteArray();
 
 		if (unsignedNumberBytes.length > length) {

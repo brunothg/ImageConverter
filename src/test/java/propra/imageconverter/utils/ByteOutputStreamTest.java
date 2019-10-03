@@ -49,7 +49,7 @@ public class ByteOutputStreamTest {
 
 		final ByteArrayOutputStream outBuffer = new ByteArrayOutputStream(2);
 		final ByteOutputStream outputStream = new ByteOutputStream(outBuffer, ByteOrder.LITTLE_ENDIAN);
-		outputStream.writeOrderedUnsinedShort(test);
+		outputStream.writeOrderedUnsignedShort(test);
 		outputStream.close();
 
 		final byte[] bytes = outBuffer.toByteArray();
@@ -62,7 +62,7 @@ public class ByteOutputStreamTest {
 
 		final ByteArrayOutputStream outBuffer = new ByteArrayOutputStream(4);
 		final ByteOutputStream outputStream = new ByteOutputStream(outBuffer, ByteOrder.LITTLE_ENDIAN);
-		outputStream.writeOrderedUnsinedInt(test);
+		outputStream.writeOrderedUnsignedInt(test);
 		outputStream.close();
 
 		final byte[] bytes = outBuffer.toByteArray();
@@ -88,7 +88,7 @@ public class ByteOutputStreamTest {
 
 		final ByteArrayOutputStream outBuffer = new ByteArrayOutputStream(1);
 		final ByteOutputStream outputStream = new ByteOutputStream(outBuffer, ByteOrder.LITTLE_ENDIAN);
-		outputStream.writeOrderedUnsinedNumber(new BigInteger(test), 8);
+		outputStream.writeOrderedUnsignedNumber(new BigInteger(test), 8);
 		outputStream.close();
 
 		final byte[] bytes = outBuffer.toByteArray();
@@ -102,7 +102,7 @@ public class ByteOutputStreamTest {
 
 		final ByteArrayOutputStream outBuffer = new ByteArrayOutputStream(1);
 		final ByteOutputStream outputStream = new ByteOutputStream(outBuffer, ByteOrder.LITTLE_ENDIAN);
-		outputStream.writeOrderedUnsinedNumber(new BigInteger(test), 8);
+		outputStream.writeOrderedUnsignedNumber(new BigInteger(test), 8);
 		outputStream.close();
 
 		final byte[] bytes = outBuffer.toByteArray();

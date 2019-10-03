@@ -50,7 +50,7 @@ public class ByteInputStreamTest {
 
 	final ByteInputStream inputStream = new ByteInputStream(new ByteArrayInputStream(bytes),
 		ByteOrder.LITTLE_ENDIAN);
-	final int unsinedShort = inputStream.readOrderedUnsinedShort();
+	final int unsinedShort = inputStream.readOrderedUnsignedShort();
 	inputStream.close();
 
 	assertEquals(40000, unsinedShort);
@@ -65,7 +65,7 @@ public class ByteInputStreamTest {
 
 	final ByteInputStream inputStream = new ByteInputStream(new ByteArrayInputStream(bytes),
 		ByteOrder.LITTLE_ENDIAN);
-	final long unsinedInt = inputStream.readOrderedUnsinedInt();
+	final long unsinedInt = inputStream.readOrderedUnsignedInt();
 	inputStream.close();
 
 	assertEquals(2147583648L, unsinedInt);
@@ -79,7 +79,7 @@ public class ByteInputStreamTest {
 
 	final ByteInputStream inputStream = new ByteInputStream(new ByteArrayInputStream(bytes),
 		ByteOrder.LITTLE_ENDIAN);
-	final BigInteger unsinedNumber = inputStream.readOrderedUnsinedNumber(bytes.length);
+	final BigInteger unsinedNumber = inputStream.readOrderedUnsignedNumber(bytes.length);
 	inputStream.close();
 
 	assertEquals("18446744073709551615", unsinedNumber.toString());
