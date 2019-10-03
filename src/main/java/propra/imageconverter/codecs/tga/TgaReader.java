@@ -35,7 +35,6 @@ public class TgaReader implements Closeable {
 	 * @throws ConversionException Wenn beim Lesen des Bildes ein Fehler auftritt
 	 */
 	public InternalImage readImage() throws ConversionException {
-		// TODO readImage
 
 		final int imageIdLength = this.readImageIdLength();
 
@@ -54,6 +53,9 @@ public class TgaReader implements Closeable {
 
 		final Point origin = this.readOrigin();
 		final Dimension dimension = this.readImageDimension();
+		if ((dimension.height <= 0) || (dimension.width <= 0)) {
+			throw new ConversionException("Nullgröße nicht erlaubt: " + dimension.toString());
+		}
 
 		// Es werden lesend alle Origins unterstützt
 		// if (!((origin.x == 0) && (origin.y == dimension.height))) {
