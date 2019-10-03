@@ -65,12 +65,12 @@ public class TgaRgbCompression extends TgaCompression {
 		final VerticalOrigin verticalOrigin = values.imageAttributes.getVerticalOrigin();
 		switch (verticalOrigin) {
 		case Bottom:
-			for (int y = values.dimension.height - 1; y >= 0; y--) {
+			for (int y = values.dimension.height - values.origin.y - 1; y >= 0; y--) {
 				f.apply(y);
 			}
 			break;
 		case Top:
-			for (int y = 0; y < values.dimension.height; y++) {
+			for (int y = 0 + (values.dimension.height - values.origin.y); y < values.dimension.height; y++) {
 				f.apply(y);
 			}
 			break;
@@ -84,12 +84,12 @@ public class TgaRgbCompression extends TgaCompression {
 		final HorizontalOrigin horizontalOrigin = values.imageAttributes.getHorizontalOrigin();
 		switch (horizontalOrigin) {
 		case Left:
-			for (int x = 0; x < values.dimension.width; x++) {
+			for (int x = 0 + values.origin.x; x < values.dimension.width; x++) {
 				f.apply(x);
 			}
 			break;
 		case Right:
-			for (int x = values.dimension.width - 1; x >= 0; x--) {
+			for (int x = values.dimension.width - (values.dimension.width - values.origin.x) - 1; x >= 0; x--) {
 				f.apply(x);
 			}
 			break;

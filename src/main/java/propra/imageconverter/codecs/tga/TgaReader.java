@@ -54,9 +54,11 @@ public class TgaReader implements Closeable {
 
 		final Point origin = this.readOrigin();
 		final Dimension dimension = this.readImageDimension();
-//		if (!((origin.x == 0) && (origin.y == dimension.height))) {
-//			throw new ConversionException("Origin nicht unterstützt: " + origin);
-//		}
+
+		// Es werden lesend alle Origins unterstützt
+		// if (!((origin.x == 0) && (origin.y == dimension.height))) {
+		// throw new ConversionException("Origin nicht unterstützt: " + origin);
+		// }
 
 		final int pixelResolution = this.readPixelResolution();
 		if (!Arrays.stream(TgaCodec.PIXEL_RESOLUTIONS).anyMatch(Integer.valueOf(pixelResolution)::equals)) {
