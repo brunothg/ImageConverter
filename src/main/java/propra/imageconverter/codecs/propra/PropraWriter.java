@@ -38,6 +38,8 @@ public class PropraWriter implements Closeable {
 	 *                             auftritt
 	 */
 	public void writeImage(InternalImage image) throws ConversionException {
+		Objects.requireNonNull(image, "image");
+
 		this.writeFormatkennung();
 
 		final Dimension dimension = image.getSize();

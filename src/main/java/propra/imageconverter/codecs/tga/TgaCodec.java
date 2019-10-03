@@ -1,5 +1,6 @@
 package propra.imageconverter.codecs.tga;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -21,13 +22,25 @@ public class TgaCodec implements ImageCodec {
 
 	@Override
 	public InternalImage readImage(InputStream in) throws ConversionException {
-		// TODO readImage
-		return null;
+		final TgaReader reader = new TgaReader(in);
+		final InternalImage image = reader.readImage();
+		try {
+			reader.close();
+		} catch (final IOException e) {
+			// Close quietly
+		}
+		return image;
 	}
 
 	@Override
 	public void writeImage(InternalImage image, OutputStream out) throws ConversionException {
-		// TODO writeImage
+		final TgaWriter writer = new TgaWriter(out);
+		writer.writeImage(image);
+		try {
+			writer.close();
+		} catch (final IOException e) {
+			// Close quietly
+		}
 	}
 
 	@Override
