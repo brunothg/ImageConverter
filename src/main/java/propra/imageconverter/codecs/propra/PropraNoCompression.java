@@ -53,7 +53,7 @@ public class PropraNoCompression extends PropraCompression {
 				final Color color = new Color(rgb);
 
 				try {
-					out.write(new byte[] { (byte) color.getBlue(), (byte) color.getGreen(), (byte) color.getRed() });
+					out.write(new byte[] { (byte) color.getGreen(), (byte) color.getBlue(), (byte) color.getRed() });
 				} catch (final IOException e) {
 					throw new ConversionException("Pixeldaten können nicht geschrieben werden: " + e.getMessage(), e);
 				}
