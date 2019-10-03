@@ -18,6 +18,8 @@ import propra.imageconverter.codecs.InternalImage;
  */
 public class TgaCodec implements ImageCodec {
 
+	public static final int[] PIXEL_RESOLUTIONS = new int[] { 24 };
+
 	public static final String FILE_EXTENSION = "tga";
 
 	@Override

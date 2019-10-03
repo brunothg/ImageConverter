@@ -1,9 +1,12 @@
 package propra.imageconverter.codecs.tga;
 
+import java.awt.Dimension;
+import java.awt.Point;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.Objects;
 
 import propra.imageconverter.codecs.ConversionException;
@@ -35,15 +38,71 @@ public class TgaReader implements Closeable {
 
 		final int imageIdLength = this.readImageIdLength();
 
+		// Überlesen der Farbpaletteneinträge
 		this.readColormapType();
 
 		final ImageType imageType = this.readImageType();
 
+		// Überlesen der Farbpaletteneinträge
 		this.readColorMapStart();
 		this.readColorMapLength();
 		this.readColorMapEntrySize();
 
+		final Point origin = this.readOrigin();
+		final Dimension dimension = this.readImageDimension();
+		if (!((origin.x == 0) && (origin.y == dimension.height))) {
+			throw new ConversionException("Origin nicht unterstützt: " + origin);
+		}
+
+		final int pixelResolution = this.readPixelResolution();
+		if (!Arrays.stream(TgaCodec.PIXEL_RESOLUTIONS).anyMatch(Integer.valueOf(pixelResolution)::equals)) {
+			throw new ConversionException("Pixelauflösung nicht unterstützt: " + pixelResolution);
+		}
+
+		final ImageAttributes imageAttributes = this.readImageAttributes();
+
 		return null;
+	}
+
+	private ImageAttributes readImageAttributes() throws ConversionException {
+		try {
+			final int imageAttributeByte = this.in.readUnsignedByte();
+			return ImageAttributes.fromByte(imageAttributeByte);
+		} catch (final IOException e) {
+			throw new ConversionException("Das Bild-Attribut konnte nicht gelesen werden: " + e.getMessage(), e);
+		}
+	}
+
+	private int readPixelResolution() throws ConversionException {
+		try {
+			return this.in.readUnsignedByte();
+		} catch (final IOException e) {
+			throw new ConversionException("Die Pixelauflösung konnte nicht gelesen werden: " + e.getMessage(), e);
+		}
+	}
+
+	private Dimension readImageDimension() throws ConversionException {
+		this.in.setByteOrder(ByteOrder.LITTLE_ENDIAN);
+		try {
+			final int width = this.in.readOrderedUnsignedShort();
+			final int height = this.in.readOrderedUnsignedShort();
+
+			return new Dimension(width, height);
+		} catch (final IOException e) {
+			throw new ConversionException("Die Bildabmessung konnte nicht gelesen werden: " + e.getMessage(), e);
+		}
+	}
+
+	private Point readOrigin() throws ConversionException {
+		this.in.setByteOrder(ByteOrder.LITTLE_ENDIAN);
+		try {
+			final int xOrigin = this.in.readOrderedUnsignedShort();
+			final int yOrigin = this.in.readOrderedUnsignedShort();
+
+			return new Point(xOrigin, yOrigin);
+		} catch (final IOException e) {
+			throw new ConversionException("Die Nullpunktkoordinaten konnte nicht gelesen werden: " + e.getMessage(), e);
+		}
 	}
 
 	private void readColorMapEntrySize() throws ConversionException {
