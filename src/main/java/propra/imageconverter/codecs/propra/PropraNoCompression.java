@@ -14,7 +14,7 @@ import propra.imageconverter.codecs.ConversionException;
  * @author marvin
  *
  */
-public class NoCompression extends Compression {
+public class PropraNoCompression extends PropraCompression {
 
 	@Override
 	public PixelCompressionValues uncompressPixelData(PixelCompressionValues values) {

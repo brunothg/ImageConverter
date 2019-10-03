@@ -1,6 +1,7 @@
-package propra.imageconverter.codecs.propra;
+package propra.imageconverter.codecs.tga;
 
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 import propra.imageconverter.codecs.ConversionException;
@@ -11,9 +12,9 @@ import propra.imageconverter.codecs.ConversionException;
  * @author bruns_m
  *
  */
-public abstract class Compression {
+public abstract class TgaCompression {
 
-	public Compression() {
+	public TgaCompression() {
 		// Erzwinge default Constructor
 	}
 
@@ -37,6 +38,8 @@ public abstract class Compression {
 	public static class PixelCompressionValues {
 		public Dimension dimension;
 		public int pixelResolution;
+		public Point origin;
+		public TgaImageAttributes imageAttributes;
 		public byte[] compressedPixelData;
 		public BufferedImage uncompressedPixelData;
 	}

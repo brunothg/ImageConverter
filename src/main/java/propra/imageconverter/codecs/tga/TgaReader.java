@@ -11,7 +11,8 @@ import java.util.Objects;
 
 import propra.imageconverter.codecs.ConversionException;
 import propra.imageconverter.codecs.InternalImage;
-import propra.imageconverter.utils.ByteInputStream;
+import propra.imageconverter.codecs.tga.TgaCompression.PixelCompressionValues;
+import propra.imageconverter.utils.ByteInputStream;;
 
 /**
  * Klasse zum Lesen von Tga-Bildern
@@ -38,14 +39,17 @@ public class TgaReader implements Closeable {
 
 		final int imageIdLength = this.readImageIdLength();
 
-		// Überlesen der Farbpaletteneinträge
-		this.readColormapType();
+		final TgaColorMapType colormapType = this.readColormapType();
 
-		final ImageType imageType = this.readImageType();
+		final TgaImageType imageType = this.readImageType();
 
-		// Überlesen der Farbpaletteneinträge
 		this.readColorMapStart();
-		this.readColorMapLength();
+
+		final int colorMapLength = this.readColorMapLength();
+		if ((colormapType == TgaColorMapType.None) && (colorMapLength != 0)) {
+			throw new ConversionException("Nicht leere Farbpalette trotz Farbpalettentyp None");
+		}
+
 		this.readColorMapEntrySize();
 
 		final Point origin = this.readOrigin();
@@ -59,15 +63,63 @@ public class TgaReader implements Closeable {
 			throw new ConversionException("Pixelauflösung nicht unterstützt: " + pixelResolution);
 		}
 
-		final ImageAttributes imageAttributes = this.readImageAttributes();
+		final TgaImageAttributes imageAttributes = this.readImageAttributes();
 
-		return null;
+		this.readImageId(imageIdLength);
+
+		if (colormapType != TgaColorMapType.None) {
+			throw new ConversionException("Farbpaletten nicht unterstützt");
+			// XXX readColorMapBytes();
+		}
+
+		final byte[] compressedPixelData = this.readCompressedPixelData(dimension, pixelResolution);
+
+		final TgaCompression compression = imageType.createCompressionInstance();
+		PixelCompressionValues compressionValues = new PixelCompressionValues();
+		compressionValues.dimension = dimension;
+		compressionValues.pixelResolution = pixelResolution;
+		compressionValues.origin = origin;
+		compressionValues.imageAttributes = imageAttributes;
+		compressionValues.compressedPixelData = compressedPixelData;
+		compressionValues = compression.uncompressPixelData(compressionValues);
+
+		final InternalImage internalImage = new InternalImage();
+		internalImage.setPixelData(compressionValues.uncompressedPixelData);
+		return internalImage;
 	}
 
-	private ImageAttributes readImageAttributes() throws ConversionException {
+	private byte[] readCompressedPixelData(Dimension dimension, int pixelResolution) throws ConversionException {
+		final int pixelDataSize = (int) Math.ceil((dimension.width * dimension.height * pixelResolution) / 8.0);
+
+		this.in.setByteOrder(ByteOrder.LITTLE_ENDIAN);
+		try {
+			final byte[] pixelData = this.in.readOrderedBytes(pixelDataSize);
+			if (pixelData.length != pixelDataSize) {
+				throw new ConversionException("Pixel nicht vollständig");
+			}
+
+			return pixelData;
+		} catch (final IOException e) {
+			throw new ConversionException("Die Pixel konnten nicht gelesen werden: " + e.getMessage(), e);
+		}
+	}
+
+	private void readImageId(int imageIdLength) throws ConversionException {
+		this.in.setByteOrder(ByteOrder.LITTLE_ENDIAN);
+		try {
+			final byte[] imageId = this.in.readOrderedBytes(imageIdLength);
+			if (imageId.length != imageIdLength) {
+				throw new ConversionException("BildId nicht vollständig");
+			}
+		} catch (final IOException e) {
+			throw new ConversionException("Die BildId konnte nicht gelesen werden: " + e.getMessage(), e);
+		}
+	}
+
+	private TgaImageAttributes readImageAttributes() throws ConversionException {
 		try {
 			final int imageAttributeByte = this.in.readUnsignedByte();
-			return ImageAttributes.fromByte(imageAttributeByte);
+			return TgaImageAttributes.fromByte(imageAttributeByte);
 		} catch (final IOException e) {
 			throw new ConversionException("Das Bild-Attribut konnte nicht gelesen werden: " + e.getMessage(), e);
 		}
@@ -105,19 +157,19 @@ public class TgaReader implements Closeable {
 		}
 	}
 
-	private void readColorMapEntrySize() throws ConversionException {
+	private int readColorMapEntrySize() throws ConversionException {
 		try {
-			this.in.readUnsignedByte();
+			return this.in.readUnsignedByte();
 		} catch (final IOException e) {
 			throw new ConversionException(
 					"Die Farbpaletteneintragsgröße konnte nicht gelesen werden: " + e.getMessage(), e);
 		}
 	}
 
-	private void readColorMapLength() throws ConversionException {
+	private int readColorMapLength() throws ConversionException {
 		this.in.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 		try {
-			this.in.readOrderedUnsignedShort();
+			return this.in.readOrderedUnsignedShort();
 		} catch (final IOException e) {
 			throw new ConversionException("Die Farbpalettenlänge konnte nicht gelesen werden: " + e.getMessage(), e);
 		}
@@ -132,10 +184,10 @@ public class TgaReader implements Closeable {
 		}
 	}
 
-	private ImageType readImageType() throws ConversionException {
+	private TgaImageType readImageType() throws ConversionException {
 		try {
 			final int imageTypeId = this.in.readUnsignedByte();
-			final ImageType imageType = ImageType.fromId(imageTypeId);
+			final TgaImageType imageType = TgaImageType.fromId(imageTypeId);
 
 			if (imageType == null) {
 				throw new ConversionException("Der Bildtyp ist unbekannt: " + imageTypeId);
@@ -147,9 +199,16 @@ public class TgaReader implements Closeable {
 		}
 	}
 
-	private void readColormapType() throws ConversionException {
+	private TgaColorMapType readColormapType() throws ConversionException {
 		try {
-			this.in.readUnsignedByte();
+			final int colorMapTypeId = this.in.readUnsignedByte();
+			final TgaColorMapType colorMapType = TgaColorMapType.fromId(colorMapTypeId);
+
+			if (colorMapType == null) {
+				throw new ConversionException("Der Farbpalettentyp ist unbekannt: " + colorMapTypeId);
+			}
+
+			return colorMapType;
 		} catch (final IOException e) {
 			throw new ConversionException("Der Farbpalettentyp konnte nicht gelesen werden: " + e.getMessage(), e);
 		}

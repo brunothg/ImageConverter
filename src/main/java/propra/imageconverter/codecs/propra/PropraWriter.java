@@ -11,7 +11,7 @@ import java.util.Objects;
 
 import propra.imageconverter.codecs.ConversionException;
 import propra.imageconverter.codecs.InternalImage;
-import propra.imageconverter.codecs.propra.Compression.PixelCompressionValues;
+import propra.imageconverter.codecs.propra.PropraCompression.PixelCompressionValues;
 import propra.imageconverter.utils.ByteOutputStream;
 
 /**
@@ -48,13 +48,13 @@ public class PropraWriter implements Closeable {
 		final int pixelResolution = 24;
 		this.writePixelResolution(pixelResolution);
 
-		final CompressionType compressionType = CompressionType.None;
+		final PropraCompressionType compressionType = PropraCompressionType.None;
 		this.writeCompressionType(compressionType);
 
 		final BigInteger pixelDataSize = BigInteger.valueOf((pixelResolution / 8) * dimension.height * dimension.width);
 		this.writePixelDataSize(pixelDataSize);
 
-		final Compression createCompressionInstance = compressionType.createCompressionInstance();
+		final PropraCompression createCompressionInstance = compressionType.createCompressionInstance();
 		PixelCompressionValues compressionValues = new PixelCompressionValues();
 		compressionValues.uncompressedPixelData = image.getPixelData();
 		compressionValues.pixelResolution = pixelResolution;
@@ -94,7 +94,7 @@ public class PropraWriter implements Closeable {
 		}
 	}
 
-	private void writeCompressionType(CompressionType compressionType) throws ConversionException {
+	private void writeCompressionType(PropraCompressionType compressionType) throws ConversionException {
 		try {
 			this.out.writeUnsignedByte(compressionType.getId());
 		} catch (final IOException e) {

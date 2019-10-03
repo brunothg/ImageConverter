@@ -12,7 +12,7 @@ import java.util.Objects;
 
 import propra.imageconverter.codecs.ConversionException;
 import propra.imageconverter.codecs.InternalImage;
-import propra.imageconverter.codecs.propra.Compression.PixelCompressionValues;
+import propra.imageconverter.codecs.propra.PropraCompression.PixelCompressionValues;
 import propra.imageconverter.utils.ByteInputStream;
 
 /**
@@ -52,7 +52,7 @@ public class PropraReader implements Closeable {
 			throw new ConversionException("Pixelauflösung nicht unterstützt: " + pixelResolution);
 		}
 
-		final CompressionType compressionType = this.readCompressionType();
+		final PropraCompressionType compressionType = this.readCompressionType();
 
 		final BigInteger pixelDataSize = this.readPixelDataSize();
 
@@ -68,7 +68,7 @@ public class PropraReader implements Closeable {
 			throw new ConversionException("Weitere Daten nach dem Bild gefunden");
 		}
 
-		final Compression compression = compressionType.createCompressionInstance();
+		final PropraCompression compression = compressionType.createCompressionInstance();
 		PixelCompressionValues compressionValues = new PixelCompressionValues();
 		compressionValues.dimension = dimension;
 		compressionValues.pixelResolution = pixelResolution;
@@ -144,10 +144,10 @@ public class PropraReader implements Closeable {
 		}
 	}
 
-	private CompressionType readCompressionType() throws ConversionException {
+	private PropraCompressionType readCompressionType() throws ConversionException {
 		try {
 			final int compressionId = this.in.readUnsignedByte();
-			final CompressionType compressionType = CompressionType.fromId(compressionId);
+			final PropraCompressionType compressionType = PropraCompressionType.fromId(compressionId);
 
 			if (compressionType == null) {
 				throw new ConversionException("Das Kompremierungsverfahren ist unbekannt: " + compressionId);

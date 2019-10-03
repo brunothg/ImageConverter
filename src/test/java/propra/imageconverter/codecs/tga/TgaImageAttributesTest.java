@@ -4,15 +4,15 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import propra.imageconverter.codecs.tga.ImageAttributes.HorizontalOrigin;
-import propra.imageconverter.codecs.tga.ImageAttributes.VerticalOrigin;
+import propra.imageconverter.codecs.tga.TgaImageAttributes.HorizontalOrigin;
+import propra.imageconverter.codecs.tga.TgaImageAttributes.VerticalOrigin;
 
-public class ImageAttributesTest {
+public class TgaImageAttributesTest {
 
 	@Test
 	public void testParseAttributeByte() throws Exception {
 		final int attributeByte = 0B00100010;// Top,Left,2
-		final ImageAttributes attributes = ImageAttributes.fromByte(attributeByte);
+		final TgaImageAttributes attributes = TgaImageAttributes.fromByte(attributeByte);
 
 		assertEquals(HorizontalOrigin.Left, attributes.getHorizontalOrigin());
 		assertEquals(VerticalOrigin.Top, attributes.getVerticalOrigin());
@@ -22,11 +22,11 @@ public class ImageAttributesTest {
 	@Test
 	public void testAttributeByteToByte() throws Exception {
 		final int attributeByte = 0B00100010;// Top,Left,2
-		final ImageAttributes attributes = new ImageAttributes();
+		final TgaImageAttributes attributes = new TgaImageAttributes();
 		attributes.setAttributeBitCount(2);
 		attributes.setHorizontalOrigin(HorizontalOrigin.Left);
 		attributes.setVerticalOrigin(VerticalOrigin.Top);
 
-		assertEquals(attributeByte, ImageAttributes.toByte(attributes));
+		assertEquals(attributeByte, TgaImageAttributes.toByte(attributes));
 	}
 }

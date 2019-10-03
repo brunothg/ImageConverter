@@ -8,17 +8,17 @@ import java.lang.reflect.InvocationTargetException;
  * @author marvin
  *
  */
-public enum CompressionType {
-	None(0, NoCompression.class);
+public enum PropraCompressionType {
+	None(0, PropraNoCompression.class);
 
 	/**
 	 * Id des Kompressionstyps nach der Spezifikation
 	 */
 	private int id;
 
-	private Class<? extends Compression> compressionClass;
+	private Class<? extends PropraCompression> compressionClass;
 
-	private CompressionType(int id, Class<? extends Compression> compressionClass) {
+	private PropraCompressionType(int id, Class<? extends PropraCompression> compressionClass) {
 		this.id = id;
 		this.compressionClass = compressionClass;
 	}
@@ -27,11 +27,11 @@ public enum CompressionType {
 		return this.id;
 	}
 
-	public Class<? extends Compression> getCompressionClass() {
+	public Class<? extends PropraCompression> getCompressionClass() {
 		return this.compressionClass;
 	}
 
-	public Compression createCompressionInstance() {
+	public PropraCompression createCompressionInstance() {
 		try {
 			return this.getCompressionClass().getDeclaredConstructor().newInstance();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
@@ -44,10 +44,10 @@ public enum CompressionType {
 	 * Gibt den Kompressionstyp zu einer Id
 	 * 
 	 * @param id Kompressions Id
-	 * @return {@link CompressionType} oder null, wenn nicht vorhanden
+	 * @return {@link PropraCompressionType} oder null, wenn nicht vorhanden
 	 */
-	public static CompressionType fromId(int id) {
-		for (final CompressionType type : CompressionType.values()) {
+	public static PropraCompressionType fromId(int id) {
+		for (final PropraCompressionType type : PropraCompressionType.values()) {
 			if (type.getId() == id) {
 				return type;
 			}

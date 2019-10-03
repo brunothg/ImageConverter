@@ -6,7 +6,7 @@ package propra.imageconverter.codecs.tga;
  * @author marvin
  *
  */
-public class ImageAttributes {
+public class TgaImageAttributes {
 
 	private int attributeBitCount = 0;
 	private HorizontalOrigin horizontalOrigin = HorizontalOrigin.Left;
@@ -62,14 +62,14 @@ public class ImageAttributes {
 				+ this.horizontalOrigin + ", verticalOrigin=" + this.verticalOrigin + "]";
 	}
 
-	public static ImageAttributes fromByte(int imageAttributeByte) {
+	public static TgaImageAttributes fromByte(int imageAttributeByte) {
 		imageAttributeByte = imageAttributeByte & 0xff;
 
 		final int attributeBits = imageAttributeByte & 0B00001111;
 		final boolean horizontalOriginBit = ((imageAttributeByte & 0B00010000) >> 4) == 1;
 		final boolean verticalOriginBit = ((imageAttributeByte & 0B00100000) >> 5) == 1;
 
-		final ImageAttributes attributes = new ImageAttributes();
+		final TgaImageAttributes attributes = new TgaImageAttributes();
 		attributes.setAttributeBitCount(attributeBits);
 		attributes.setHorizontalOrigin((horizontalOriginBit) ? HorizontalOrigin.Right : HorizontalOrigin.Left);
 		attributes.setVerticalOrigin((verticalOriginBit) ? VerticalOrigin.Top : VerticalOrigin.Bottom);
@@ -77,7 +77,7 @@ public class ImageAttributes {
 		return attributes;
 	}
 
-	public static int toByte(ImageAttributes attributes) {
+	public static int toByte(TgaImageAttributes attributes) {
 		int attributeBits = 0;
 
 		attributeBits = attributeBits | attributes.getAttributeBitCount();
