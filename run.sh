@@ -41,3 +41,7 @@ wait
 
 java -Xmx256m propra.imageconverter.ImageConverter --output=../KE1_TestBilder/test_03_uncompressed2.propra --input=../KE1_Konvertiert/test_03.png
 java -Xmx256m propra.imageconverter.ImageConverter --input=../KE1_TestBilder/test_03_uncompressed2.propra --output=../KE1_Konvertiert/test_03_2.png
+
+
+java -Xmx256m propra.imageconverter.ImageConverter --output=../KE1_TestBilder/test_01_uncompressed2.tga --input=../KE1_Konvertiert/test_01.png
+java -Xmx256m propra.imageconverter.ImageConverter --input=../KE1_TestBilder/test_01_uncompressed2.tga --output=../KE1_Konvertiert/test_01_02.png
