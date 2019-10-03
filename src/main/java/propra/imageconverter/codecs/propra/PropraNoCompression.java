@@ -42,7 +42,6 @@ public class PropraNoCompression extends PropraCompression {
 
 	@Override
 	public PixelCompressionValues compressPixelData(PixelCompressionValues values) throws ConversionException {
-		// TODO compressPixelData
 
 		final ByteArrayOutputStream out = new ByteArrayOutputStream(
 				values.dimension.width * values.dimension.height * 3);

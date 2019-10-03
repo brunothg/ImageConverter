@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.function.Function;
 
@@ -51,57 +52,101 @@ public class TgaRgbCompression extends TgaCompression {
 	 * @param f      Funktion, die pro Pixel aufgerufen wird
 	 * @throws ConversionException
 	 */
-	private void pixelLoop(PixelCompressionValues values, Function<Point, Void> f) throws ConversionException {
-		this.verticalPixelLoop(values, (y) -> {
-			this.horizontalPixelLoop(values, (x) -> {
-				f.apply(new Point(x, y));
-				return null;
+	private void pixelLoop(PixelCompressionValues values, Function<Point, Exception> f) throws ConversionException {
+		final Exception e = this.verticalPixelLoop(values, (y) -> {
+			final Exception eV = this.horizontalPixelLoop(values, (x) -> {
+				final Exception eH = f.apply(new Point(x, y));
+				return eH;
 			});
-			return null;
+			return eV;
 		});
+
+		if (e != null) {
+			if (e instanceof ConversionException) {
+				throw (ConversionException) e;
+			} else {
+				throw new ConversionException("PixelLoop Fehler: " + e.getMessage(), e);
+			}
+		}
 	}
 
-	private void verticalPixelLoop(PixelCompressionValues values, Function<Integer, Void> f) {
+	private Exception verticalPixelLoop(PixelCompressionValues values, Function<Integer, Exception> f) {
 		final VerticalOrigin verticalOrigin = values.imageAttributes.getVerticalOrigin();
 		switch (verticalOrigin) {
 		case Bottom:
 			for (int y = values.dimension.height - values.origin.y - 1; y >= 0; y--) {
-				f.apply(y);
+				final Exception e = f.apply(y);
+				if (e != null) {
+					return e;
+				}
 			}
 			break;
 		case Top:
 			for (int y = 0 + (values.dimension.height - values.origin.y); y < values.dimension.height; y++) {
-				f.apply(y);
+				final Exception e = f.apply(y);
+				if (e != null) {
+					return e;
+				}
 			}
 			break;
 		default:
 			throw new RuntimeException("VerticalOrigin Typ nicht unterstützt: " + verticalOrigin);
 
 		}
+
+		return null;
 	}
 
-	private void horizontalPixelLoop(PixelCompressionValues values, Function<Integer, Void> f) {
+	private Exception horizontalPixelLoop(PixelCompressionValues values, Function<Integer, Exception> f) {
 		final HorizontalOrigin horizontalOrigin = values.imageAttributes.getHorizontalOrigin();
 		switch (horizontalOrigin) {
 		case Left:
 			for (int x = 0 + values.origin.x; x < values.dimension.width; x++) {
-				f.apply(x);
+				final Exception e = f.apply(x);
+				if (e != null) {
+					return e;
+				}
 			}
 			break;
 		case Right:
 			for (int x = values.dimension.width - (values.dimension.width - values.origin.x) - 1; x >= 0; x--) {
-				f.apply(x);
+				final Exception e = f.apply(x);
+				if (e != null) {
+					return e;
+				}
 			}
 			break;
 		default:
-			throw new RuntimeException("HorizontalOrigin Typ nicht unterstützt: " + horizontalOrigin);
+			return new ConversionException("HorizontalOrigin Typ nicht unterstützt: " + horizontalOrigin);
 		}
+
+		return null;
 	}
 
 	@Override
 	public PixelCompressionValues compressPixelData(PixelCompressionValues values) throws ConversionException {
-		// TODO compressPixelData
-		values.compressedPixelData = new byte[0];
+		final ByteArrayOutputStream out = new ByteArrayOutputStream(
+				values.dimension.width * values.dimension.height * 3);
+
+		this.pixelLoop(values, (point) -> {
+			final int rgb = values.uncompressedPixelData.getRGB(point.x, point.y);
+			final Color color = new Color(rgb);
+
+			try {
+				out.write(new byte[] { (byte) color.getBlue(), (byte) color.getGreen(), (byte) color.getRed() });
+			} catch (final IOException e) {
+				return new ConversionException("Pixeldaten können nicht geschrieben werden: " + e.getMessage(), e);
+			}
+
+			return null;
+		});
+
+		try {
+			out.close();
+		} catch (final IOException e) {
+		}
+
+		values.compressedPixelData = out.toByteArray();
 		return values;
 	}
 
