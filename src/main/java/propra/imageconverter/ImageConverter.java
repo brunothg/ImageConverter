@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import propra.imageconverter.codecs.ConversionException;
 import propra.imageconverter.codecs.ImageCodec;
 import propra.imageconverter.codecs.InternalImage;
+import propra.imageconverter.codecs.internal.JpgCodec;
 import propra.imageconverter.codecs.internal.PngCodec;
 import propra.imageconverter.codecs.propra.PropraCodec;
 import propra.imageconverter.codecs.tga.TgaCodec;
@@ -19,7 +20,8 @@ import propra.imageconverter.utils.ReturnCodeWatcher;
  */
 public class ImageConverter {
 
-	private static final ImageCodec[] CODECS = new ImageCodec[] { new TgaCodec(), new PropraCodec(), new PngCodec() };
+	private static final ImageCodec[] CODECS = new ImageCodec[] { new TgaCodec(), new PropraCodec(), new PngCodec(),
+			new JpgCodec() };
 
 	/**
 	 * Programm-Einsteigspunkt
