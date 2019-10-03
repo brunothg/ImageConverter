@@ -7,8 +7,9 @@ mkdir tmp
 mkdir tmp/src
 
 cp -r src/main/java/* tmp/src
+cp -r src/test/java/* tmp/test
 cd tmp
-zip -r KE1_Bruns_Marvin.zip src
+zip -r KE1_Bruns_Marvin.zip src test
 mv KE1_Bruns_Marvin.zip ../
 cd ..
 

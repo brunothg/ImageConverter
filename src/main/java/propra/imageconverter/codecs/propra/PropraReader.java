@@ -104,6 +104,8 @@ public class PropraReader implements Closeable {
 	}
 
 	private byte[] readCompressedPixelData(BigInteger pixelDataSize) throws ConversionException {
+		this.in.setByteOrder(ByteOrder.BIG_ENDIAN);
+
 		int pixelDataLength;
 		try {
 			pixelDataLength = pixelDataSize.intValueExact();
@@ -111,17 +113,16 @@ public class PropraReader implements Closeable {
 			throw new ConversionException("Die Bildgröße ist zu groß: " + e.getMessage(), e);
 		}
 
-		final byte[] buffer = new byte[pixelDataLength];
 		try {
-			final int read = this.in.read(buffer);
-			if (read != pixelDataLength) {
+			final byte[] buffer = this.in.readOrderedBytes(pixelDataLength);
+			if (buffer.length != pixelDataLength) {
 				throw new ConversionException("Pixeldaten nicht vollständig");
 			}
+			return buffer;
 		} catch (final IOException e) {
 			throw new ConversionException("Die Pixeldaten konnten nicht gelesen werden: " + e.getMessage(), e);
 		}
 
-		return buffer;
 	}
 
 	private long readChecksum() throws ConversionException {
