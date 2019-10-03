@@ -39,7 +39,6 @@ public class TgaWriter implements Closeable {
 	 */
 	public void writeImage(InternalImage image) throws ConversionException {
 		Objects.requireNonNull(image, "image");
-		// TODO writeImage
 
 		this.writeImageIdLength(0);
 
