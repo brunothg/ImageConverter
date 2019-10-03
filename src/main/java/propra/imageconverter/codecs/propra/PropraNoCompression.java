@@ -24,8 +24,8 @@ public class PropraNoCompression extends PropraCompression {
 		final ByteArrayInputStream in = new ByteArrayInputStream(values.compressedPixelData);
 		for (int y = 0; y < values.dimension.height; y++) {
 			for (int x = 0; x < values.dimension.width; x++) {
-				final int b = in.read();
 				final int g = in.read();
+				final int b = in.read();
 				final int r = in.read();
 
 				image.setRGB(x, y, new Color(r, g, b).getRGB());
