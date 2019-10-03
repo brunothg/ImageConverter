@@ -54,9 +54,9 @@ public class TgaReader implements Closeable {
 
 		final Point origin = this.readOrigin();
 		final Dimension dimension = this.readImageDimension();
-		if (!((origin.x == 0) && (origin.y == dimension.height))) {
-			throw new ConversionException("Origin nicht unterstützt: " + origin);
-		}
+//		if (!((origin.x == 0) && (origin.y == dimension.height))) {
+//			throw new ConversionException("Origin nicht unterstützt: " + origin);
+//		}
 
 		final int pixelResolution = this.readPixelResolution();
 		if (!Arrays.stream(TgaCodec.PIXEL_RESOLUTIONS).anyMatch(Integer.valueOf(pixelResolution)::equals)) {
@@ -91,7 +91,7 @@ public class TgaReader implements Closeable {
 	private byte[] readCompressedPixelData(Dimension dimension, int pixelResolution) throws ConversionException {
 		final int pixelDataSize = (int) Math.ceil((dimension.width * dimension.height * pixelResolution) / 8.0);
 
-		this.in.setByteOrder(ByteOrder.LITTLE_ENDIAN);
+		this.in.setByteOrder(ByteOrder.BIG_ENDIAN);
 		try {
 			final byte[] pixelData = this.in.readOrderedBytes(pixelDataSize);
 			if (pixelData.length != pixelDataSize) {
