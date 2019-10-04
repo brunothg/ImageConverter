@@ -94,22 +94,32 @@ public class ByteOutputStream extends FilterOutputStream implements Closeable {
      * Schreibt eine vorzeichenlose Zahl
      *
      * @param number Vorzeichenlose Zahl
-     * @param length Anzahl der Bytes
+     * @param length Anzahl der Bytes oder null, wenn egal
+     * @return Anzahl Bytes, die geschrieben wurden
      * @throws IOException
      */
-    public void writeOrderedUnsignedNumber(BigInteger number, int length) throws IOException {
+    public int writeOrderedUnsignedNumber(BigInteger number, Integer length) throws IOException {
 	byte[] unsignedNumberBytes = number.toByteArray();
+	number.clearBit(0);
+	final int bytesWithoutSignBits = (int) Math.ceil(number.bitLength() / 8.0);
+	unsignedNumberBytes = Arrays.copyOfRange(unsignedNumberBytes, unsignedNumberBytes.length - bytesWithoutSignBits,
+		unsignedNumberBytes.length); // Entferne Vorzeichen-Byte(s)
 
-	if (unsignedNumberBytes.length > length) {
-	    unsignedNumberBytes = Arrays.copyOfRange(unsignedNumberBytes, unsignedNumberBytes.length - length,
-		    unsignedNumberBytes.length);
-	} else if (unsignedNumberBytes.length < length) {
-	    reverse(unsignedNumberBytes);
-	    unsignedNumberBytes = Arrays.copyOf(unsignedNumberBytes, length);
-	    reverse(unsignedNumberBytes);
+	// Byte-Anzahl prüfen und ggf. Anpassen (vergrößern)
+	if (length != null) {
+	    if (unsignedNumberBytes.length < length) {
+		reverse(unsignedNumberBytes);
+		unsignedNumberBytes = Arrays.copyOf(unsignedNumberBytes, length);
+		reverse(unsignedNumberBytes);
+	    }
+
+	    if (unsignedNumberBytes.length != length) {
+		throw new IOException("Number " + number.toString() + " can not be stored with " + length + "bytes");
+	    }
 	}
 
 	this.writeOrderedBytes(unsignedNumberBytes);
+	return unsignedNumberBytes.length;
     }
 
     /**
