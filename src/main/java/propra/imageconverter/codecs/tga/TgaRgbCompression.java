@@ -3,6 +3,8 @@ package propra.imageconverter.codecs.tga;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,17 +27,23 @@ public class TgaRgbCompression extends TgaCompression {
 	final BufferedImage image = new BufferedImage(values.dimension.width, values.dimension.height,
 		BufferedImage.TYPE_INT_RGB);
 
-	final InputStream in = values.compressedPixelData;
+	final InputStream in = new BufferedInputStream(values.compressedPixelData, 1024 * 1024);
 
 	this.pixelLoop(values, (point) -> {
 	    try {
-		final int b = in.read();
-		final int g = in.read();
-		final int r = in.read();
+		final byte[] pixel = new byte[3];
+		final int read = in.read(pixel);
+		if (read != pixel.length) {
+		    return new ConversionException("Pixel konnte nicht gelesen werden: " + point + " : Fehlende Daten");
+		}
+
+		final int b = Byte.toUnsignedInt(pixel[0]);
+		final int g = Byte.toUnsignedInt(pixel[1]);
+		final int r = Byte.toUnsignedInt(pixel[2]);
 
 		image.setRGB(point.x, point.y, new Color(r, g, b).getRGB());
 	    } catch (final IOException e) {
-		return new ConversionException("Pixel konnte nicht gelesen werden: " + point + " :" + e.getMessage(),
+		return new ConversionException("Pixel konnte nicht gelesen werden: " + point + " : " + e.getMessage(),
 			e);
 	    }
 	    return null;
@@ -52,7 +60,7 @@ public class TgaRgbCompression extends TgaCompression {
 
     @Override
     public TgaPixelEncodeValues compressPixelData(TgaPixelEncodeValues values) throws ConversionException {
-	final OutputStream out = values.compressedPixelData;
+	final OutputStream out = new BufferedOutputStream(values.compressedPixelData, 1024 * 1024);
 	this.pixelLoop(values, (point) -> {
 	    final int rgb = values.uncompressedPixelData.getRGB(point.x, point.y);
 	    final Color color = new Color(rgb);
