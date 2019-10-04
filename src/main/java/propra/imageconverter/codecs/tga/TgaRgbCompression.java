@@ -27,7 +27,7 @@ public class TgaRgbCompression extends TgaCompression {
 	final BufferedImage image = new BufferedImage(values.dimension.width, values.dimension.height,
 		BufferedImage.TYPE_INT_RGB);
 
-	final InputStream in = new BufferedInputStream(values.compressedPixelData, 1024 * 1024);
+	final InputStream in = new BufferedInputStream(values.compressedPixelData, 1024);
 
 	this.pixelLoop(values, (point) -> {
 	    try {
@@ -60,7 +60,7 @@ public class TgaRgbCompression extends TgaCompression {
 
     @Override
     public TgaPixelEncodeValues compressPixelData(TgaPixelEncodeValues values) throws ConversionException {
-	final OutputStream out = new BufferedOutputStream(values.compressedPixelData, 1024 * 1024);
+	final OutputStream out = new BufferedOutputStream(values.compressedPixelData, 1024);
 	this.pixelLoop(values, (point) -> {
 	    final int rgb = values.uncompressedPixelData.getRGB(point.x, point.y);
 	    final Color color = new Color(rgb);
