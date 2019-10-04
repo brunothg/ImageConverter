@@ -14,8 +14,9 @@ import java.util.Objects;
 
 import propra.imageconverter.codecs.ConversionException;
 import propra.imageconverter.codecs.InternalImage;
-import propra.imageconverter.codecs.tga.TgaCompression.PixelCompressionValues;
-import propra.imageconverter.utils.ByteInputStream;;
+import propra.imageconverter.codecs.tga.TgaCompression.PixelDecodeValues;
+import propra.imageconverter.utils.ByteInputStream;
+import propra.imageconverter.utils.LimitInputStream;;
 
 /**
  * Klasse zum Lesen von Tga-Bildern
@@ -79,15 +80,17 @@ public class TgaReader implements Closeable {
 	    // XXX readColorMapBytes();
 	}
 
-	final byte[] compressedPixelData = this.readCompressedPixelData(dimension, pixelResolution);
+	final BigInteger pixelDataSize = BigDecimal.valueOf(dimension.width)
+		.multiply(BigDecimal.valueOf(dimension.height)).multiply(BigDecimal.valueOf(pixelResolution))
+		.divide(BigDecimal.valueOf(8)).setScale(0, RoundingMode.CEILING).toBigInteger();
 
 	final TgaCompression compression = imageType.createCompressionInstance();
-	PixelCompressionValues compressionValues = new PixelCompressionValues();
+	PixelDecodeValues compressionValues = new PixelDecodeValues();
 	compressionValues.dimension = dimension;
 	compressionValues.pixelResolution = pixelResolution;
 	compressionValues.origin = origin;
 	compressionValues.imageAttributes = imageAttributes;
-	compressionValues.compressedPixelData = compressedPixelData;
+	compressionValues.compressedPixelData = getPixelDataInputStream(pixelDataSize);
 	compressionValues = compression.uncompressPixelData(compressionValues);
 
 	final InternalImage internalImage = new InternalImage();
@@ -95,29 +98,9 @@ public class TgaReader implements Closeable {
 	return internalImage;
     }
 
-    private byte[] readCompressedPixelData(Dimension dimension, int pixelResolution) throws ConversionException {
-	final BigInteger pixelDataSize = BigDecimal.valueOf(dimension.width)
-		.multiply(BigDecimal.valueOf(dimension.height)).multiply(BigDecimal.valueOf(pixelResolution))
-		.divide(BigDecimal.valueOf(8)).setScale(0, RoundingMode.CEILING).toBigInteger();
-
-	int pixelDataLength;
-	try {
-	    pixelDataLength = pixelDataSize.intValueExact();
-	} catch (final ArithmeticException e) {
-	    throw new ConversionException("Die Bildgröße ist zu groß: " + e.getMessage(), e);
-	}
-
+    private LimitInputStream getPixelDataInputStream(final BigInteger pixelDataSize) {
 	this.in.setByteOrder(ByteOrder.BIG_ENDIAN);
-	try {
-	    final byte[] pixelData = this.in.readOrderedBytes(pixelDataLength);
-	    if (pixelData.length != pixelDataLength) {
-		throw new ConversionException("Pixel nicht vollständig");
-	    }
-
-	    return pixelData;
-	} catch (final IOException e) {
-	    throw new ConversionException("Die Pixel konnten nicht gelesen werden: " + e.getMessage(), e);
-	}
+	return new LimitInputStream(this.in, pixelDataSize);
     }
 
     private void readImageId(int imageIdLength) throws ConversionException {

@@ -3,6 +3,8 @@ package propra.imageconverter.codecs.tga;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import propra.imageconverter.codecs.ConversionException;
 
@@ -14,33 +16,39 @@ import propra.imageconverter.codecs.ConversionException;
  */
 public abstract class TgaCompression {
 
-	public TgaCompression() {
-		// Erzwinge default Constructor
-	}
+    public TgaCompression() {
+	// Erzwinge default Constructor
+    }
 
-	/**
-	 * Dekompremiert die Pixeldaten
-	 *
-	 * @param values Parameter für die Dekomprimierung
-	 * @return Die Ergebnisse
-	 */
-	public abstract PixelCompressionValues uncompressPixelData(PixelCompressionValues values)
-			throws ConversionException;
+    /**
+     * Dekompremiert die Pixeldaten
+     *
+     * @param values Parameter für die Dekomprimierung
+     * @return Die Ergebnisse (gleiches Objekt wie parameter)
+     */
+    public abstract PixelDecodeValues uncompressPixelData(PixelDecodeValues values) throws ConversionException;
 
-	/**
-	 * Kompremiert die Pixeldaten
-	 *
-	 * @param values Parameter für die Komprimierung
-	 * @returnDie Ergebnisse
-	 */
-	public abstract PixelCompressionValues compressPixelData(PixelCompressionValues values) throws ConversionException;
+    /**
+     * Kompremiert die Pixeldaten
+     *
+     * @param values Parameter für die Komprimierung
+     * @return Die Ergebnisse (gleiches Objekt wie parameter)
+     */
+    public abstract PixelEncodeValues compressPixelData(PixelEncodeValues values) throws ConversionException;
 
-	public static class PixelCompressionValues {
-		public Dimension dimension;
-		public int pixelResolution;
-		public Point origin;
-		public TgaImageAttributes imageAttributes;
-		public byte[] compressedPixelData;
-		public BufferedImage uncompressedPixelData;
-	}
+    public abstract static class PixelCompressionValues {
+	public Dimension dimension;
+	public int pixelResolution;
+	public Point origin;
+	public TgaImageAttributes imageAttributes;
+	public BufferedImage uncompressedPixelData;
+    }
+
+    public static class PixelDecodeValues extends PixelCompressionValues {
+	public InputStream compressedPixelData;
+    }
+
+    public static class PixelEncodeValues extends PixelCompressionValues {
+	public OutputStream compressedPixelData;
+    }
 }
