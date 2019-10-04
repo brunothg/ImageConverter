@@ -21,7 +21,7 @@ import propra.imageconverter.codecs.tga.TgaImageAttributes.VerticalOrigin;
 public class TgaRgbCompression extends TgaCompression {
 
     @Override
-    public PixelDecodeValues uncompressPixelData(PixelDecodeValues values) throws ConversionException {
+    public TgaPixelDecodeValues uncompressPixelData(TgaPixelDecodeValues values) throws ConversionException {
 	final BufferedImage image = new BufferedImage(values.dimension.width, values.dimension.height,
 		BufferedImage.TYPE_INT_RGB);
 
@@ -51,7 +51,7 @@ public class TgaRgbCompression extends TgaCompression {
     }
 
     @Override
-    public PixelEncodeValues compressPixelData(PixelEncodeValues values) throws ConversionException {
+    public TgaPixelEncodeValues compressPixelData(TgaPixelEncodeValues values) throws ConversionException {
 	final OutputStream out = values.compressedPixelData;
 	this.pixelLoop(values, (point) -> {
 	    final int rgb = values.uncompressedPixelData.getRGB(point.x, point.y);
@@ -81,7 +81,7 @@ public class TgaRgbCompression extends TgaCompression {
      * @param f      Funktion, die pro Pixel aufgerufen wird
      * @throws ConversionException
      */
-    private void pixelLoop(PixelCompressionValues values, Function<Point, Exception> f) throws ConversionException {
+    private void pixelLoop(TgaPixelCompressionValues values, Function<Point, Exception> f) throws ConversionException {
 	final Exception e = this.verticalPixelLoop(values, (y) -> {
 	    final Exception eV = this.horizontalPixelLoop(values, (x) -> {
 		final Exception eH = f.apply(new Point(x, y));
@@ -99,7 +99,7 @@ public class TgaRgbCompression extends TgaCompression {
 	}
     }
 
-    private Exception verticalPixelLoop(PixelCompressionValues values, Function<Integer, Exception> f) {
+    private Exception verticalPixelLoop(TgaPixelCompressionValues values, Function<Integer, Exception> f) {
 	final VerticalOrigin verticalOrigin = values.imageAttributes.getVerticalOrigin();
 	switch (verticalOrigin) {
 	case Bottom:
@@ -126,7 +126,7 @@ public class TgaRgbCompression extends TgaCompression {
 	return null;
     }
 
-    private Exception horizontalPixelLoop(PixelCompressionValues values, Function<Integer, Exception> f) {
+    private Exception horizontalPixelLoop(TgaPixelCompressionValues values, Function<Integer, Exception> f) {
 	final HorizontalOrigin horizontalOrigin = values.imageAttributes.getHorizontalOrigin();
 	switch (horizontalOrigin) {
 	case Left:

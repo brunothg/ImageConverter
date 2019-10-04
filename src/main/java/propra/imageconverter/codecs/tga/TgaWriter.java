@@ -10,7 +10,7 @@ import java.util.Objects;
 
 import propra.imageconverter.codecs.ConversionException;
 import propra.imageconverter.codecs.InternalImage;
-import propra.imageconverter.codecs.tga.TgaCompression.PixelEncodeValues;
+import propra.imageconverter.codecs.tga.TgaCompression.TgaPixelEncodeValues;
 import propra.imageconverter.codecs.tga.TgaImageAttributes.HorizontalOrigin;
 import propra.imageconverter.codecs.tga.TgaImageAttributes.VerticalOrigin;
 import propra.imageconverter.utils.ByteOutputStream;
@@ -68,7 +68,7 @@ public class TgaWriter implements Closeable {
 	this.writeImageAttributes(imageAttributes);
 
 	final TgaCompression compression = imageType.createCompressionInstance();
-	PixelEncodeValues compressionValues = new PixelEncodeValues();
+	TgaPixelEncodeValues compressionValues = new TgaPixelEncodeValues();
 	compressionValues.dimension = dimension;
 	compressionValues.pixelResolution = pixelResolution;
 	compressionValues.origin = origin;

@@ -26,7 +26,7 @@ public abstract class TgaCompression {
      * @param values Parameter für die Dekomprimierung
      * @return Die Ergebnisse (gleiches Objekt wie parameter)
      */
-    public abstract PixelDecodeValues uncompressPixelData(PixelDecodeValues values) throws ConversionException;
+    public abstract TgaPixelDecodeValues uncompressPixelData(TgaPixelDecodeValues values) throws ConversionException;
 
     /**
      * Kompremiert die Pixeldaten
@@ -34,9 +34,9 @@ public abstract class TgaCompression {
      * @param values Parameter für die Komprimierung
      * @return Die Ergebnisse (gleiches Objekt wie parameter)
      */
-    public abstract PixelEncodeValues compressPixelData(PixelEncodeValues values) throws ConversionException;
+    public abstract TgaPixelEncodeValues compressPixelData(TgaPixelEncodeValues values) throws ConversionException;
 
-    public abstract static class PixelCompressionValues {
+    public abstract static class TgaPixelCompressionValues {
 	public Dimension dimension;
 	public int pixelResolution;
 	public Point origin;
@@ -44,11 +44,11 @@ public abstract class TgaCompression {
 	public BufferedImage uncompressedPixelData;
     }
 
-    public static class PixelDecodeValues extends PixelCompressionValues {
+    public static class TgaPixelDecodeValues extends TgaPixelCompressionValues {
 	public InputStream compressedPixelData;
     }
 
-    public static class PixelEncodeValues extends PixelCompressionValues {
+    public static class TgaPixelEncodeValues extends TgaPixelCompressionValues {
 	public OutputStream compressedPixelData;
     }
 }
