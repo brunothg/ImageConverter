@@ -14,63 +14,63 @@ import java.util.Objects;
  */
 public class LimitInputStream extends InputStream {
 
-    private final InputStream in;
-    private final BigInteger maxLength;
+	private final InputStream in;
+	private final BigInteger maxLength;
 
-    private BigInteger counter;
+	private BigInteger counter;
 
-    public LimitInputStream(InputStream in, BigInteger maxLength) {
-	this.in = in;
-	Objects.requireNonNull(in, "in");
-	this.maxLength = maxLength;
-	this.counter = BigInteger.ZERO;
-    }
-
-    public LimitInputStream(InputStream in, long maxLength) {
-	this(in, BigInteger.valueOf(maxLength));
-    }
-
-    @Override
-    public int read() throws IOException {
-	if (this.counter.compareTo(this.maxLength) >= 0) {
-	    return -1;
+	public LimitInputStream(InputStream in, BigInteger maxLength) {
+		this.in = in;
+		Objects.requireNonNull(in, "in");
+		this.maxLength = maxLength;
+		this.counter = BigInteger.ZERO;
 	}
 
-	final int readByte = this.in.read();
-	this.counter = this.counter.add(BigInteger.ONE);
+	public LimitInputStream(InputStream in, long maxLength) {
+		this(in, BigInteger.valueOf(maxLength));
+	}
 
-	return readByte;
-    }
+	@Override
+	public int read() throws IOException {
+		if (this.counter.compareTo(this.maxLength) >= 0) {
+			return -1;
+		}
 
-    @Override
-    public int read(byte[] b, int off, int len) throws IOException {
-	final int read = this.in.read(b, off, len);
+		final int readByte = this.in.read();
+		this.counter = this.counter.add(BigInteger.ONE);
 
-	this.counter = this.counter.add(BigInteger.valueOf(read));
-	return read;
-    }
+		return readByte;
+	}
 
-    @Override
-    public int available() throws IOException {
+	@Override
+	public int read(byte[] b, int off, int len) throws IOException {
+		final int read = this.in.read(b, off, len);
 
-	final int available = this.maxLength.subtract(this.counter).min(BigInteger.valueOf(this.in.available()))
-		.min(BigInteger.valueOf(Integer.MAX_VALUE)).intValueExact();
+		this.counter = this.counter.add(BigInteger.valueOf(read));
+		return read;
+	}
 
-	return available;
-    }
+	@Override
+	public int available() throws IOException {
 
-    @Override
-    public synchronized void mark(int readlimit) {
-    }
+		final int available = this.maxLength.subtract(this.counter).min(BigInteger.valueOf(this.in.available()))
+				.min(BigInteger.valueOf(Integer.MAX_VALUE)).intValueExact();
 
-    @Override
-    public synchronized void reset() throws IOException {
-	throw new IOException("mark/reset not supported");
-    }
+		return available;
+	}
 
-    @Override
-    public boolean markSupported() {
-	return false;
-    }
+	@Override
+	public synchronized void mark(int readlimit) {
+	}
+
+	@Override
+	public synchronized void reset() throws IOException {
+		throw new IOException("mark/reset not supported");
+	}
+
+	@Override
+	public boolean markSupported() {
+		return false;
+	}
 
 }
