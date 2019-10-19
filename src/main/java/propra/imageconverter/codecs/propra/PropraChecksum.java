@@ -67,7 +67,7 @@ public class PropraChecksum {
 	 * verwiesen.
 	 *
 	 * @param i
-	 * @param an {@link #calculateAn(int, byte[])}
+	 * @param data
 	 * @return
 	 */
 	private long calculateBi(int i, byte[] data) {
