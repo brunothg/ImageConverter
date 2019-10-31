@@ -29,7 +29,7 @@ public class PropraNoCompression extends PropraCompression {
 			for (int x = 0; x < values.dimension.width; x++) {
 				try {
 					final byte[] pixel = new byte[3];
-					final int read = in.read(pixel);
+					final int read = in.readNBytes(pixel, 0, pixel.length);
 					if (read != pixel.length) {
 						throw new ConversionException(
 								"Pixel konnte nicht gelesen werden: " + new Point(x, y) + " : Fehlende Daten");

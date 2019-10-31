@@ -32,7 +32,7 @@ public class TgaRgbCompression extends TgaCompression {
 		this.pixelLoop(values, (point) -> {
 			try {
 				final byte[] pixel = new byte[3];
-				final int read = in.read(pixel);
+				final int read = in.readNBytes(pixel, 0, pixel.length);
 				if (read != pixel.length) {
 					return new ConversionException("Pixel konnte nicht gelesen werden: " + point + " : Fehlende Daten");
 				}

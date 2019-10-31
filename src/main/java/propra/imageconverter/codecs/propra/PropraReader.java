@@ -1,7 +1,6 @@
 package propra.imageconverter.codecs.propra;
 
 import java.awt.Dimension;
-import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,8 +12,10 @@ import java.util.Objects;
 
 import propra.imageconverter.codecs.ConversionException;
 import propra.imageconverter.codecs.InternalImage;
+import propra.imageconverter.codecs.propra.PropraChecksum.PropraChecksumInputStream;
 import propra.imageconverter.codecs.propra.PropraCompression.PropraPixelDecodeValues;
 import propra.imageconverter.utils.ByteInputStream;
+import propra.imageconverter.utils.LimitInputStream;
 
 /**
  *
@@ -59,9 +60,20 @@ public class PropraReader implements Closeable {
 
 		final long checksum = this.readChecksum();
 
-		// Umweg ist leider wegen der Checksum-Berechnung notwendig
-		final byte[] compressedPixelData = this.readCompressedPixelData(pixelDataSize);
-		if (!this.checkChecksum(checksum, compressedPixelData)) {
+		PropraChecksumInputStream pixelDataInputStream = new PropraChecksum.PropraChecksumInputStream(getPixelDataInputStream(pixelDataSize));
+		final PropraCompression compression = compressionType.createCompressionInstance();
+		PropraPixelDecodeValues compressionValues = new PropraPixelDecodeValues();
+		compressionValues.dimension = dimension;
+		compressionValues.pixelResolution = pixelResolution;
+		compressionValues.compressedPixelData = pixelDataInputStream;
+		compressionValues = compression.uncompressPixelData(compressionValues);
+		try {
+			pixelDataInputStream.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		if (checksum != pixelDataInputStream.getActualChecksum()) {
 			throw new ConversionException("Prüfsumme stimmt nicht überein");
 		}
 
@@ -69,13 +81,6 @@ public class PropraReader implements Closeable {
 		if (!this.checkEndOfStream()) {
 			throw new ConversionException("Weitere Daten nach dem Bild gefunden");
 		}
-
-		final PropraCompression compression = compressionType.createCompressionInstance();
-		PropraPixelDecodeValues compressionValues = new PropraPixelDecodeValues();
-		compressionValues.dimension = dimension;
-		compressionValues.pixelResolution = pixelResolution;
-		compressionValues.compressedPixelData = new ByteArrayInputStream(compressedPixelData);
-		compressionValues = compression.uncompressPixelData(compressionValues);
 
 		final InternalImage internalImage = new InternalImage();
 		internalImage.setPixelData(compressionValues.uncompressedPixelData);
@@ -99,34 +104,11 @@ public class PropraReader implements Closeable {
 		}
 	}
 
-	private boolean checkChecksum(long checksum, byte[] compressedPixelData) {
-		final long calculatedChecksum = PropraChecksum.calculateChecksum(compressedPixelData);
-
-		return checksum == calculatedChecksum;
-	}
-
-	private byte[] readCompressedPixelData(BigInteger pixelDataSize) throws ConversionException {
+	private LimitInputStream getPixelDataInputStream(final BigInteger pixelDataSize) {
 		this.in.setByteOrder(ByteOrder.BIG_ENDIAN);
-
-		int pixelDataLength;
-		try {
-			pixelDataLength = pixelDataSize.intValueExact();
-		} catch (final ArithmeticException e) {
-			throw new ConversionException("Die Bildgröße ist zu groß: " + e.getMessage(), e);
-		}
-
-		try {
-			final byte[] buffer = this.in.readOrderedBytes(pixelDataLength);
-			if (buffer.length != pixelDataLength) {
-				throw new ConversionException("Pixeldaten nicht vollständig");
-			}
-			return buffer;
-		} catch (final IOException e) {
-			throw new ConversionException("Die Pixeldaten konnten nicht gelesen werden: " + e.getMessage(), e);
-		}
-
+		return new LimitInputStream(this.in, pixelDataSize);
 	}
-
+	
 	private long readChecksum() throws ConversionException {
 		this.in.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 		try {
