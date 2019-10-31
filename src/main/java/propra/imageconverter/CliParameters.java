@@ -15,6 +15,12 @@ public class CliParameters {
 
 	public static final String ARGUMENT_NAME_INPUT = "input";
 	public static final String ARGUMENT_NAME_OUTPUT = "output";
+	public static final String ARGUMENT_NAME_COMPRESSION = "compression";
+
+	public static final String ARGUMENT_NAME_BASE32_ENCODE = "encode-base-32";
+	public static final String ARGUMENT_NAME_BASE32_DECODE = "decode-base-32";
+	public static final String ARGUMENT_NAME_BASEN_ENCODE = "encode-base-n";
+	public static final String ARGUMENT_NAME_BASEN_DECODE = "decode-base-n";
 
 	private static final String ARGUMENT_KEY_VALUE_DIVIDER_REGEX = "=";
 	private static final String ARGUMENT_PREFIX = "--";
@@ -50,6 +56,14 @@ public class CliParameters {
 	 */
 	public String getInputFileString() {
 		return this.getParameter(CliParameters.ARGUMENT_NAME_INPUT);
+	}
+	
+	/**
+	 * Gibt den Wert für dei Kompressionsart
+	 * @return Kompressionsart oder null für default
+	 */
+	public String getCompression() {
+		return this.getParameter(CliParameters.ARGUMENT_NAME_COMPRESSION);
 	}
 
 	/**
@@ -132,6 +146,31 @@ public class CliParameters {
 
 		return Paths.get(outputFileString);
 	}
+	
+	public boolean isBase32Encode() {
+		return this.getParameter(CliParameters.ARGUMENT_NAME_BASE32_ENCODE) != null;
+	}
+	
+	public boolean isBase32Decode() {
+		return this.getParameter(CliParameters.ARGUMENT_NAME_BASE32_DECODE) != null;
+	}
+	
+	public boolean isBaseNDecode() {
+		return this.getParameter(CliParameters.ARGUMENT_NAME_BASEN_DECODE) != null;
+	}
+	
+	public boolean isBaseNEncode() {
+		return getBaseNEncodeAlphabet() != null;
+	}
+	
+	public char[] getBaseNEncodeAlphabet() {
+		String parameter = this.getParameter(CliParameters.ARGUMENT_NAME_BASEN_ENCODE);
+		if (parameter==null) {
+			return null;
+		}
+		
+		return parameter.toCharArray();
+	}
 
 	/**
 	 * Liest die übergebenen Kommandozeilenargumente ein. Erwartet werden Argumente
@@ -158,13 +197,15 @@ public class CliParameters {
 					.split(CliParameters.ARGUMENT_KEY_VALUE_DIVIDER_REGEX, 2);
 
 			// Guard für ungültige Parameter
-			if (keyAndValue.length != 2) {
-				return;
+			if (keyAndValue.length == 2) {
+				final String key = keyAndValue[0];
+				final String value = keyAndValue[1];
+				this.setParameter(key, value);
+			} else if (keyAndValue.length == 1) {
+				final String key = keyAndValue[0];
+				this.setParameter(key, "");
 			}
 
-			final String key = keyAndValue[0];
-			final String value = keyAndValue[1];
-			this.setParameter(key, value);
 		}
 	}
 
