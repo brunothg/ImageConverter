@@ -59,12 +59,18 @@ public class PropraWriter implements Closeable {
 		final BigInteger pixelDataSize = BigInteger.valueOf((pixelResolution / 8) * dimension.height * dimension.width);
 		this.writePixelDataSize(pixelDataSize);
 
-		// Umweg ist leider wegen der Checksum-Berechnung & -Position notwendig
 		try {
+			// Versuche Pixeldaten in temp Datei zwischenzuspeichern, die Checksumme zu
+			// berechnen/schreiben und dann die Pixeldaten aus der temp Datei zu kopieren
 			Path pixelDataTempFile = Files.createTempFile("propra", "imagedata");
-			
+			if (!Files.isReadable(pixelDataTempFile) || !Files.isWritable(pixelDataTempFile)) {
+				Files.delete(pixelDataTempFile);
+				throw new IOException("Not readable nad writeable");
+			}
+
 			try {
-				PropraChecksumOutputStream pixelDataOutputStream = new PropraChecksum.PropraChecksumOutputStream(Files.newOutputStream(pixelDataTempFile));
+				PropraChecksumOutputStream pixelDataOutputStream = new PropraChecksum.PropraChecksumOutputStream(
+						Files.newOutputStream(pixelDataTempFile));
 				final PropraCompression createCompressionInstance = compressionType.createCompressionInstance();
 				PropraPixelEncodeValues compressionValues = new PropraPixelEncodeValues();
 				compressionValues.uncompressedPixelData = image.getPixelData();
@@ -73,21 +79,22 @@ public class PropraWriter implements Closeable {
 				compressionValues.compressedPixelData = pixelDataOutputStream;
 				compressionValues = createCompressionInstance.compressPixelData(compressionValues);
 				pixelDataOutputStream.close();
-				
+
 				final long checksum = pixelDataOutputStream.getActualChecksum();
 				this.writeChecksum(checksum);
 
 				InputStream pixelDataInputStream = Files.newInputStream(pixelDataTempFile);
 				this.writePixelData(pixelDataInputStream);
 				pixelDataInputStream.close();
-				
+
 				Files.deleteIfExists(pixelDataTempFile);
 			} catch (Exception e) {
-				throw new ConversionException("Dateisystem-Fehler: "+e.getMessage(),e);
+				throw new ConversionException("Dateisystem-Fehler: " + e.getMessage(), e);
 			}
 		} catch (IOException e) {
-			// Fallback auf alte Methode
-			final ByteArrayOutputStream pixelDataOutputStream = new ByteArrayOutputStream(pixelDataSize.intValueExact());
+			// Fallback auf alte in memory Methode
+			final ByteArrayOutputStream pixelDataOutputStream = new ByteArrayOutputStream(
+					pixelDataSize.intValueExact());
 
 			final PropraCompression createCompressionInstance = compressionType.createCompressionInstance();
 			PropraPixelEncodeValues compressionValues = new PropraPixelEncodeValues();
@@ -103,17 +110,17 @@ public class PropraWriter implements Closeable {
 
 			this.writePixelData(pixelDataOutputStream.toByteArray());
 		}
-		
+
 	}
 
 	private void writePixelData(InputStream pixelDataInputStream) throws ConversionException {
 		this.out.setByteOrder(ByteOrder.BIG_ENDIAN);
 		try {
 			byte[] buffer = new byte[1024];
-	        int read;
-	        while ((read = pixelDataInputStream.read(buffer, 0, 1024)) >= 0) {
-	            out.write(buffer, 0, read);
-	        }
+			int read;
+			while ((read = pixelDataInputStream.read(buffer, 0, 1024)) >= 0) {
+				out.write(buffer, 0, read);
+			}
 		} catch (IOException e) {
 			throw new ConversionException("Pixeldaten konnten nicht geschrieben werden: " + e.getMessage(), e);
 		}
