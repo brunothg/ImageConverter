@@ -4,14 +4,18 @@ import java.awt.Dimension;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
 
 import propra.imageconverter.codecs.ConversionException;
 import propra.imageconverter.codecs.InternalImage;
+import propra.imageconverter.codecs.propra.PropraChecksum.PropraChecksumOutputStream;
 import propra.imageconverter.codecs.propra.PropraCompression.PropraPixelEncodeValues;
 import propra.imageconverter.utils.ByteOutputStream;
 
@@ -56,20 +60,63 @@ public class PropraWriter implements Closeable {
 		this.writePixelDataSize(pixelDataSize);
 
 		// Umweg ist leider wegen der Checksum-Berechnung & -Position notwendig
-		final ByteArrayOutputStream pixelDataOutputStream = new ByteArrayOutputStream(pixelDataSize.intValueExact());
+		try {
+			Path pixelDataTempFile = Files.createTempFile("propra", "imagedata");
+			
+			try {
+				PropraChecksumOutputStream pixelDataOutputStream = new PropraChecksum.PropraChecksumOutputStream(Files.newOutputStream(pixelDataTempFile));
+				final PropraCompression createCompressionInstance = compressionType.createCompressionInstance();
+				PropraPixelEncodeValues compressionValues = new PropraPixelEncodeValues();
+				compressionValues.uncompressedPixelData = image.getPixelData();
+				compressionValues.pixelResolution = pixelResolution;
+				compressionValues.dimension = dimension;
+				compressionValues.compressedPixelData = pixelDataOutputStream;
+				compressionValues = createCompressionInstance.compressPixelData(compressionValues);
+				pixelDataOutputStream.close();
+				
+				final long checksum = pixelDataOutputStream.getActualChecksum();
+				this.writeChecksum(checksum);
 
-		final PropraCompression createCompressionInstance = compressionType.createCompressionInstance();
-		PropraPixelEncodeValues compressionValues = new PropraPixelEncodeValues();
-		compressionValues.uncompressedPixelData = image.getPixelData();
-		compressionValues.pixelResolution = pixelResolution;
-		compressionValues.dimension = dimension;
-		compressionValues.compressedPixelData = pixelDataOutputStream;
-		compressionValues = createCompressionInstance.compressPixelData(compressionValues);
+				InputStream pixelDataInputStream = Files.newInputStream(pixelDataTempFile);
+				this.writePixelData(pixelDataInputStream);
+				pixelDataInputStream.close();
+				
+				Files.deleteIfExists(pixelDataTempFile);
+			} catch (Exception e) {
+				throw new ConversionException("Dateisystem-Fehler: "+e.getMessage(),e);
+			}
+		} catch (IOException e) {
+			// Fallback auf alte Methode
+			final ByteArrayOutputStream pixelDataOutputStream = new ByteArrayOutputStream(pixelDataSize.intValueExact());
 
-		final long checksum = PropraChecksum.calculateChecksum(pixelDataOutputStream.toByteArray());
-		this.writeChecksum(checksum);
+			final PropraCompression createCompressionInstance = compressionType.createCompressionInstance();
+			PropraPixelEncodeValues compressionValues = new PropraPixelEncodeValues();
+			compressionValues.uncompressedPixelData = image.getPixelData();
+			compressionValues.pixelResolution = pixelResolution;
+			compressionValues.dimension = dimension;
+			compressionValues.compressedPixelData = pixelDataOutputStream;
+			compressionValues = createCompressionInstance.compressPixelData(compressionValues);
 
-		this.writePixelData(pixelDataOutputStream.toByteArray());
+			@SuppressWarnings("deprecation")
+			final long checksum = PropraChecksum.calculateChecksum(pixelDataOutputStream.toByteArray());
+			this.writeChecksum(checksum);
+
+			this.writePixelData(pixelDataOutputStream.toByteArray());
+		}
+		
+	}
+
+	private void writePixelData(InputStream pixelDataInputStream) throws ConversionException {
+		this.out.setByteOrder(ByteOrder.BIG_ENDIAN);
+		try {
+			byte[] buffer = new byte[1024];
+	        int read;
+	        while ((read = pixelDataInputStream.read(buffer, 0, 1024)) >= 0) {
+	            out.write(buffer, 0, read);
+	        }
+		} catch (IOException e) {
+			throw new ConversionException("Pixeldaten konnten nicht geschrieben werden: " + e.getMessage(), e);
+		}
 	}
 
 	private void writePixelData(byte[] compressedPixelData) throws ConversionException {
