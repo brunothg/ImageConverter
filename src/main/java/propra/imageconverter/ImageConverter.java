@@ -20,7 +20,7 @@ import propra.imageconverter.utils.ReturnCodeWatcher;
  */
 public class ImageConverter {
 
-	private static final ImageCodec[] CODECS = new ImageCodec[] { new TgaCodec(), new PropraCodec(), new PngCodec(),
+	private static final ImageCodec[] IMAGE_CODECS = new ImageCodec[] { new TgaCodec(), new PropraCodec(), new PngCodec(),
 			new JpgCodec() };
 
 	/**
@@ -64,7 +64,7 @@ public class ImageConverter {
 	 */
 	private static ImageCodec getCodec(String fileExtension) throws ConversionException {
 
-		for (final ImageCodec imageCodec : CODECS) {
+		for (final ImageCodec imageCodec : IMAGE_CODECS) {
 			if (imageCodec.getFileExtension().equalsIgnoreCase(fileExtension)) {
 				return imageCodec;
 			}

@@ -3,7 +3,9 @@ package propra.imageconverter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Klasse für den Zugriff auf Kommandozeilenargumente
@@ -26,6 +28,7 @@ public class CliParameters {
 	private static final String ARGUMENT_PREFIX = "--";
 
 	private final Map<String, String> parameters = new HashMap<>();
+	private final Set<String> flags = new HashSet<>();
 
 	/**
 	 * Gibt den Wert zu dem Parameter. Kann null sein.
@@ -33,7 +36,7 @@ public class CliParameters {
 	 * @param name Der Parametername
 	 * @return Den Parameterwert oder null, wenn nicht vorhanden
 	 */
-	public String getParameter(String name) {
+	public String getParameter(final String name) {
 		final String value = this.parameters.get(name);
 
 		return value;
@@ -45,8 +48,32 @@ public class CliParameters {
 	 * @param name  Der Parametername
 	 * @param value Der Parameterwert
 	 */
-	private void setParameter(String name, String value) {
+	private void setParameter(final String name, final String value) {
 		this.parameters.put(name, value);
+	}
+
+	/**
+	 * Gibt zurück, ob ein Flag gestzt ist
+	 *
+	 * @param name Flag-Name
+	 * @return true, wenn die Flag gestzt ist, sonst false
+	 */
+	public boolean isFlag(final String name) {
+		return this.flags.contains(name);
+	}
+
+	/**
+	 * Setzt oder Entfernt ein Flag
+	 *
+	 * @param name   Flag-Name
+	 * @param active wenn true wird Flag gesetzt, sonst entfernt
+	 */
+	private void setFlag(final String name, final boolean active) {
+		if (active) {
+			this.flags.add(name);
+		} else {
+			this.flags.remove(name);
+		}
 	}
 
 	/**
@@ -57,9 +84,10 @@ public class CliParameters {
 	public String getInputFileString() {
 		return this.getParameter(CliParameters.ARGUMENT_NAME_INPUT);
 	}
-	
+
 	/**
 	 * Gibt den Wert für dei Kompressionsart
+	 *
 	 * @return Kompressionsart oder null für default
 	 */
 	public String getCompression() {
@@ -146,29 +174,45 @@ public class CliParameters {
 
 		return Paths.get(outputFileString);
 	}
-	
+
+	/**
+	 * Gibt an, ob das Base32-Encode flag gesetzt ist
+	 *
+	 * @return true oder false
+	 */
 	public boolean isBase32Encode() {
-		return this.getParameter(CliParameters.ARGUMENT_NAME_BASE32_ENCODE) != null;
+		return this.isFlag(CliParameters.ARGUMENT_NAME_BASE32_ENCODE);
 	}
-	
+
+	/**
+	 * Gibt an, ob das Base32-Decode flag gesetzt ist
+	 *
+	 * @return true oder false
+	 */
 	public boolean isBase32Decode() {
-		return this.getParameter(CliParameters.ARGUMENT_NAME_BASE32_DECODE) != null;
+		return this.isFlag(CliParameters.ARGUMENT_NAME_BASE32_DECODE);
 	}
-	
+
+	/**
+	 * Gibt an, ob das Base-N-Decode flag gesetzt ist
+	 *
+	 * @return true oder false
+	 */
 	public boolean isBaseNDecode() {
-		return this.getParameter(CliParameters.ARGUMENT_NAME_BASEN_DECODE) != null;
+		return this.isFlag(CliParameters.ARGUMENT_NAME_BASEN_DECODE);
 	}
-	
-	public boolean isBaseNEncode() {
-		return getBaseNEncodeAlphabet() != null;
-	}
-	
+
+	/**
+	 * Gibt an, ob das Base-N-Encode Alphabet
+	 *
+	 * @return true oder false
+	 */
 	public char[] getBaseNEncodeAlphabet() {
-		String parameter = this.getParameter(CliParameters.ARGUMENT_NAME_BASEN_ENCODE);
-		if (parameter==null) {
+		final String parameter = this.getParameter(CliParameters.ARGUMENT_NAME_BASEN_ENCODE);
+		if (parameter == null) {
 			return null;
 		}
-		
+
 		return parameter.toCharArray();
 	}
 
@@ -179,7 +223,7 @@ public class CliParameters {
 	 *
 	 * @param arguments Die Kommandozeilenargumente
 	 */
-	public void parse(String[] arguments) {
+	public void parse(final String[] arguments) {
 		for (final String argument : arguments) {
 			this.parseArgument(argument);
 		}
@@ -191,7 +235,7 @@ public class CliParameters {
 	 * @see #parse(String[])
 	 * @param argument Das Argument
 	 */
-	private void parseArgument(String argument) {
+	private void parseArgument(final String argument) {
 		if (argument.startsWith(CliParameters.ARGUMENT_PREFIX)) {
 			final String[] keyAndValue = argument.substring(CliParameters.ARGUMENT_PREFIX.length())
 					.split(CliParameters.ARGUMENT_KEY_VALUE_DIVIDER_REGEX, 2);
@@ -203,7 +247,7 @@ public class CliParameters {
 				this.setParameter(key, value);
 			} else if (keyAndValue.length == 1) {
 				final String key = keyAndValue[0];
-				this.setParameter(key, "");
+				this.setFlag(key, true);
 			}
 
 		}
