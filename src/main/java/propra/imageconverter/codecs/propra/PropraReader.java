@@ -10,10 +10,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
 
-import propra.imageconverter.codecs.ConversionException;
-import propra.imageconverter.codecs.InternalImage;
 import propra.imageconverter.codecs.propra.PropraChecksum.PropraChecksumInputStream;
 import propra.imageconverter.codecs.propra.PropraCompression.PropraPixelDecodeValues;
+import propra.imageconverter.imagecodecs.ConversionException;
+import propra.imageconverter.imagecodecs.InternalImage;
 import propra.imageconverter.utils.ByteInputStream;
 import propra.imageconverter.utils.LimitInputStream;
 

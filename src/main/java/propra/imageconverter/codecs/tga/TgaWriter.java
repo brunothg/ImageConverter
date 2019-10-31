@@ -8,11 +8,11 @@ import java.io.OutputStream;
 import java.nio.ByteOrder;
 import java.util.Objects;
 
-import propra.imageconverter.codecs.ConversionException;
-import propra.imageconverter.codecs.InternalImage;
 import propra.imageconverter.codecs.tga.TgaCompression.TgaPixelEncodeValues;
 import propra.imageconverter.codecs.tga.TgaImageAttributes.HorizontalOrigin;
 import propra.imageconverter.codecs.tga.TgaImageAttributes.VerticalOrigin;
+import propra.imageconverter.imagecodecs.ConversionException;
+import propra.imageconverter.imagecodecs.InternalImage;
 import propra.imageconverter.utils.ByteOutputStream;
 
 /**

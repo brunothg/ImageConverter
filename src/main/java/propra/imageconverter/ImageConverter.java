@@ -2,13 +2,13 @@ package propra.imageconverter;
 
 import java.nio.file.Files;
 
-import propra.imageconverter.codecs.ConversionException;
-import propra.imageconverter.codecs.ImageCodec;
-import propra.imageconverter.codecs.InternalImage;
 import propra.imageconverter.codecs.internal.JpgCodec;
 import propra.imageconverter.codecs.internal.PngCodec;
 import propra.imageconverter.codecs.propra.PropraCodec;
 import propra.imageconverter.codecs.tga.TgaCodec;
+import propra.imageconverter.imagecodecs.ConversionException;
+import propra.imageconverter.imagecodecs.ImageCodec;
+import propra.imageconverter.imagecodecs.InternalImage;
 import propra.imageconverter.utils.ReturnCodeWatcher;
 
 /**

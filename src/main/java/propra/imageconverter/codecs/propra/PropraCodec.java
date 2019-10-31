@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import propra.imageconverter.codecs.ConversionException;
-import propra.imageconverter.codecs.ImageCodec;
-import propra.imageconverter.codecs.InternalImage;
+import propra.imageconverter.imagecodecs.ConversionException;
+import propra.imageconverter.imagecodecs.ImageCodec;
+import propra.imageconverter.imagecodecs.InternalImage;
 
 /**
  * Codec für Propra Bilder. Siehe <a href=

@@ -5,9 +5,9 @@ import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
 
-import propra.imageconverter.codecs.ConversionException;
-import propra.imageconverter.codecs.ImageCodec;
-import propra.imageconverter.codecs.InternalImage;
+import propra.imageconverter.imagecodecs.ConversionException;
+import propra.imageconverter.imagecodecs.ImageCodec;
+import propra.imageconverter.imagecodecs.InternalImage;
 
 /**
  * Codec für JPGs

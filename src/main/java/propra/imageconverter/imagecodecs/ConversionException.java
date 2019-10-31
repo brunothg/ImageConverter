@@ -1,4 +1,4 @@
-package propra.imageconverter.codecs;
+package propra.imageconverter.imagecodecs;
 
 import propra.imageconverter.utils.ReturnCodeWatcher.ReturnCode;
 

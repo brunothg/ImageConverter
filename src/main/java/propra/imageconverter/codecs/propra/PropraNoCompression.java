@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import propra.imageconverter.codecs.ConversionException;
+import propra.imageconverter.imagecodecs.ConversionException;
 
 /**
  * Liest/Schreibt Pixeldaten ohne Kompremierung

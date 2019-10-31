@@ -13,10 +13,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
-import propra.imageconverter.codecs.ConversionException;
-import propra.imageconverter.codecs.InternalImage;
 import propra.imageconverter.codecs.propra.PropraChecksum.PropraChecksumOutputStream;
 import propra.imageconverter.codecs.propra.PropraCompression.PropraPixelEncodeValues;
+import propra.imageconverter.imagecodecs.ConversionException;
+import propra.imageconverter.imagecodecs.InternalImage;
 import propra.imageconverter.utils.ByteOutputStream;
 
 /**
