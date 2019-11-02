@@ -1,6 +1,7 @@
 package propra.imageconverter.imagecodecs.propra;
 
 import java.awt.Dimension;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class PropraWriter implements Closeable {
 	PropraCompressionType compressionType = PropraCompressionType.None;
 
 	public PropraWriter(final OutputStream out) {
-		this.out = new ByteOutputStream(Objects.requireNonNull(out, "out"));
+		this.out = new ByteOutputStream(new BufferedOutputStream(Objects.requireNonNull(out, "out"), 1024));
 	}
 
 	/**
@@ -199,10 +200,6 @@ public class PropraWriter implements Closeable {
 
 	@Override
 	public void close() throws IOException {
-		try {
-			this.out.flush();
-		} catch (final IOException e) {
-		}
 		this.out.close();
 	}
 }

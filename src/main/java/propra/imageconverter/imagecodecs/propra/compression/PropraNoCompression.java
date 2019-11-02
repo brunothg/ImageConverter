@@ -3,8 +3,6 @@ package propra.imageconverter.imagecodecs.propra.compression;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -20,11 +18,12 @@ import propra.imageconverter.imagecodecs.ConversionException;
 public class PropraNoCompression extends PropraCompression {
 
 	@Override
-	public PropraPixelDecodeValues uncompressPixelData(final PropraPixelDecodeValues values) throws ConversionException {
+	public PropraPixelDecodeValues uncompressPixelData(final PropraPixelDecodeValues values)
+			throws ConversionException {
 		final BufferedImage image = new BufferedImage(values.dimension.width, values.dimension.height,
 				BufferedImage.TYPE_INT_RGB);
 
-		final InputStream in = new BufferedInputStream(values.compressedPixelData, 1024);
+		final InputStream in = values.compressedPixelData;
 		for (int y = 0; y < values.dimension.height; y++) {
 			for (int x = 0; x < values.dimension.width; x++) {
 				try {
@@ -46,10 +45,6 @@ public class PropraNoCompression extends PropraCompression {
 				}
 			}
 		}
-		try {
-			in.close();
-		} catch (final IOException e) {
-		}
 
 		values.uncompressedPixelData = image;
 		return values;
@@ -58,7 +53,7 @@ public class PropraNoCompression extends PropraCompression {
 	@Override
 	public PropraPixelEncodeValues compressPixelData(final PropraPixelEncodeValues values) throws ConversionException {
 
-		final OutputStream out = new BufferedOutputStream(values.compressedPixelData, 1024);
+		final OutputStream out = values.compressedPixelData;
 
 		for (int y = 0; y < values.dimension.height; y++) {
 			for (int x = 0; x < values.dimension.width; x++) {
@@ -72,10 +67,6 @@ public class PropraNoCompression extends PropraCompression {
 					throw new ConversionException("Pixeldaten können nicht geschrieben werden: " + e.getMessage(), e);
 				}
 			}
-		}
-		try {
-			out.close();
-		} catch (final IOException e) {
 		}
 
 		return values;

@@ -73,4 +73,9 @@ public class LimitInputStream extends InputStream {
 		return false;
 	}
 
+	@Override
+	public void close() throws IOException {
+		super.close();
+		this.in.close();
+	}
 }

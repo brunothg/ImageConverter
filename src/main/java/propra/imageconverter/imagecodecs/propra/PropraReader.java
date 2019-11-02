@@ -1,6 +1,7 @@
 package propra.imageconverter.imagecodecs.propra;
 
 import java.awt.Dimension;
+import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,7 +31,7 @@ public class PropraReader implements Closeable {
 	private final ByteInputStream in;
 
 	public PropraReader(final InputStream in) {
-		this.in = new ByteInputStream(Objects.requireNonNull(in, "in"));
+		this.in = new ByteInputStream(new BufferedInputStream(Objects.requireNonNull(in, "in"), 1024));
 	}
 
 	/**

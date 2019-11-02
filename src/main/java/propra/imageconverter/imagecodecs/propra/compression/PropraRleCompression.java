@@ -3,8 +3,6 @@ package propra.imageconverter.imagecodecs.propra.compression;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,7 +23,7 @@ public class PropraRleCompression extends PropraCompression {
 		final BufferedImage image = new BufferedImage(values.dimension.width, values.dimension.height,
 				BufferedImage.TYPE_INT_RGB);
 
-		final InputStream in = new BufferedInputStream(values.compressedPixelData, 1024);
+		final InputStream in = values.compressedPixelData;
 
 		int x = 0;
 		int y = 0;
@@ -73,11 +71,6 @@ public class PropraRleCompression extends PropraCompression {
 			}
 		}
 
-		try {
-			in.close();
-		} catch (final IOException e) {
-		}
-
 		values.uncompressedPixelData = image;
 		return values;
 	}
@@ -99,7 +92,7 @@ public class PropraRleCompression extends PropraCompression {
 	@Override
 	public PropraPixelEncodeValues compressPixelData(final PropraPixelEncodeValues values) throws ConversionException {
 
-		final OutputStream out = new BufferedOutputStream(values.compressedPixelData, 1024);
+		final OutputStream out = values.compressedPixelData;
 
 		// TODO Kompression verbessern
 		for (int y = 0; y < values.dimension.height; y++) {
@@ -119,10 +112,6 @@ public class PropraRleCompression extends PropraCompression {
 					throw new ConversionException("Pixeldaten können nicht geschrieben werden: " + e.getMessage(), e);
 				}
 			}
-		}
-		try {
-			out.close();
-		} catch (final IOException e) {
 		}
 
 		return values;
