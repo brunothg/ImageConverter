@@ -84,27 +84,54 @@ public class TgaRleCompression extends TgaCompression {
 	public TgaPixelEncodeValues compressPixelData(final TgaPixelEncodeValues values) throws ConversionException {
 		final OutputStream out = values.compressedPixelData;
 
-		// TODO Kompression verbessern
 		final PixelLoop pixelLoop = new PixelLoop(values);
 		Point pixelPosition = pixelLoop.init();
+		Color actualColor = null;
+		int colorCounter = 0;
 		while (pixelPosition != null) {
 			final int rgb = values.uncompressedPixelData.getRGB(pixelPosition.x, pixelPosition.y);
 			final Color color = new Color(rgb);
-			try {
-				final boolean rleRepeat = false;
-				final int rleCounter = 1;
-				final int steuerbyte = ((rleCounter - 1) & 0b01111111) + ((rleRepeat) ? 0b10000000 : 0b00000000);
 
-				out.write(steuerbyte);
-				out.write(new byte[] { (byte) color.getBlue(), (byte) color.getGreen(), (byte) color.getRed() });
-			} catch (final IOException e) {
-				throw new ConversionException("Pixeldaten können nicht geschrieben werden: " + e.getMessage(), e);
+			if (actualColor == null) {
+				actualColor = color;
+				colorCounter = 1;
+			} else {
+				if ((colorCounter < (0b0111111 + 1)) /* Max Counter 128 */ && (pixelPosition.x > 0) /* Neue Zeile */
+						&& actualColor.equals(color)) {
+					colorCounter++;
+				} else {
+					// Neuer Pixelblock -> Alten wegschreiben
+					this.writePixelRepeat(out, actualColor, colorCounter);
+
+					actualColor = color;
+					colorCounter = 1;
+				}
 			}
 
 			pixelPosition = pixelLoop.increment();
 		}
+		// Restpixel schreiben
+		this.writePixelRepeat(out, actualColor, colorCounter);
 
 		return values;
+	}
+
+	private void writePixelRepeat(final OutputStream out, final Color actualColor, final int colorCounter)
+			throws ConversionException {
+		if ((colorCounter < 1) || (colorCounter > 128)) {
+			throw new ConversionException("Wiederholungszahl ungültig (1 - 128):" + colorCounter);
+		}
+		try {
+			final boolean rleRepeat = true;
+			final int rleCounter = colorCounter; // Max 128
+			final int steuerbyte = ((rleCounter - 1) & 0b01111111) + ((rleRepeat) ? 0b10000000 : 0b00000000);
+
+			out.write(steuerbyte);
+			out.write(new byte[] { (byte) actualColor.getBlue(), (byte) actualColor.getGreen(),
+					(byte) actualColor.getRed() });
+		} catch (final IOException e) {
+			throw new ConversionException("Pixeldaten können nicht geschrieben werden: " + e.getMessage(), e);
+		}
 	}
 
 	/**
