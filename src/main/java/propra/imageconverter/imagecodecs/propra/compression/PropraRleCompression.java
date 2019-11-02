@@ -12,7 +12,7 @@ import java.io.OutputStream;
 import propra.imageconverter.imagecodecs.ConversionException;
 
 /**
- * Liest/Schreibt Pixeldaten ohne Kompremierung
+ * Liest/Schreibt Pixeldaten mit RLE Kompremierung
  *
  * @author marvin
  *
@@ -20,32 +20,59 @@ import propra.imageconverter.imagecodecs.ConversionException;
 public class PropraRleCompression extends PropraCompression {
 
 	@Override
-	public PropraPixelDecodeValues uncompressPixelData(PropraPixelDecodeValues values) throws ConversionException {
+	public PropraPixelDecodeValues uncompressPixelData(final PropraPixelDecodeValues values)
+			throws ConversionException {
 		final BufferedImage image = new BufferedImage(values.dimension.width, values.dimension.height,
 				BufferedImage.TYPE_INT_RGB);
 
 		final InputStream in = new BufferedInputStream(values.compressedPixelData, 1024);
-		for (int y = 0; y < values.dimension.height; y++) {
-			for (int x = 0; x < values.dimension.width; x++) {
-				try {
-					final byte[] pixel = new byte[3];
-					final int read = in.readNBytes(pixel, 0, pixel.length);
-					if (read != pixel.length) {
-						throw new ConversionException(
-								"Pixel konnte nicht gelesen werden: " + new Point(x, y) + " : Fehlende Daten");
-					}
 
-					final int g = Byte.toUnsignedInt(pixel[0]);
-					final int b = Byte.toUnsignedInt(pixel[1]);
-					final int r = Byte.toUnsignedInt(pixel[2]);
+		int x = 0;
+		int y = 0;
+		final int width = values.dimension.width;
+		final int height = values.dimension.height;
 
-					image.setRGB(x, y, new Color(r, g, b).getRGB());
-				} catch (final IOException e) {
+		while (y < height) {
+			try {
+				final int steuerbit = in.read();
+				if (steuerbit < 0) {
 					throw new ConversionException(
-							"Pixel konnte nicht gelesen werden: " + new Point(x, y) + " : " + e.getMessage(), e);
+							"Steuerbit konnte nicht gelesen werden: " + new Point(x, y) + " : Fehlende Daten");
 				}
+				final boolean rleRepeat = (steuerbit & 0b10000000) == 0b10000000;
+				final int rleCounter = ((steuerbit & 0b01111111)) + 1;
+
+				if (rleRepeat) {
+					final Color pixel = this.readPixel(in);
+
+					for (int i = 0; i < rleCounter; i++) {
+						image.setRGB(x, y, pixel.getRGB());
+
+						x++;
+						if (x >= width) {
+							x = 0;
+							y++;
+						}
+					}
+				} else {
+					for (int i = 0; i < rleCounter; i++) {
+						final Color pixel = this.readPixel(in);
+						image.setRGB(x, y, pixel.getRGB());
+
+						x++;
+						if (x >= width) {
+							x = 0;
+							y++;
+						}
+					}
+				}
+
+			} catch (final IOException e) {
+				throw new ConversionException(
+						"Pixel konnte nicht gelesen werden: " + new Point(x, y) + " : " + e.getMessage(), e);
 			}
 		}
+
 		try {
 			in.close();
 		} catch (final IOException e) {
@@ -55,8 +82,22 @@ public class PropraRleCompression extends PropraCompression {
 		return values;
 	}
 
+	private Color readPixel(final InputStream in) throws ConversionException, IOException {
+		final byte[] pixel = new byte[3];
+		final int read = in.readNBytes(pixel, 0, pixel.length);
+		if (read != pixel.length) {
+			throw new ConversionException("Pixel konnte nicht gelesen werden: Fehlende Daten");
+		}
+
+		final int g = Byte.toUnsignedInt(pixel[0]);
+		final int b = Byte.toUnsignedInt(pixel[1]);
+		final int r = Byte.toUnsignedInt(pixel[2]);
+
+		return new Color(r, g, b);
+	}
+
 	@Override
-	public PropraPixelEncodeValues compressPixelData(PropraPixelEncodeValues values) throws ConversionException {
+	public PropraPixelEncodeValues compressPixelData(final PropraPixelEncodeValues values) throws ConversionException {
 
 		final OutputStream out = new BufferedOutputStream(values.compressedPixelData, 1024);
 
@@ -66,11 +107,13 @@ public class PropraRleCompression extends PropraCompression {
 				final int rgb = values.uncompressedPixelData.getRGB(x, y);
 				final Color color = new Color(rgb);
 
-				try {
-					out.write(new byte[] { (byte) color.getGreen(), (byte) color.getBlue(), (byte) color.getRed() });
-				} catch (final IOException e) {
-					throw new ConversionException("Pixeldaten können nicht geschrieben werden: " + e.getMessage(), e);
-				}
+				// TODO RLE compressPixelData
+				throw new ConversionException("Not implemented");
+//				try {
+//					out.write(new byte[] { (byte) color.getGreen(), (byte) color.getBlue(), (byte) color.getRed() });
+//				} catch (final IOException e) {
+//					throw new ConversionException("Pixeldaten können nicht geschrieben werden: " + e.getMessage(), e);
+//				}
 			}
 		}
 		try {
