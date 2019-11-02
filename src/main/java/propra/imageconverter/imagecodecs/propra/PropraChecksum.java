@@ -6,8 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Hilfsklasse zum Berechnen und Überprüfen der Checksumme (teils inspiriert
- * durch Review der ersten Abgabe)
+ * Hilfsklasse zum Berechnen und Überprüfen der Checksumme
  *
  * @author marvin
  *
