@@ -8,7 +8,6 @@ import java.io.OutputStream;
 
 import propra.imageconverter.imagecodecs.ConversionException;
 import propra.imageconverter.imagecodecs.InternalImage;
-import propra.imageconverter.imagecodecs.InternalMemoryImage;
 import propra.imageconverter.imagecodecs.tga.TgaImageAttributes.HorizontalOrigin;
 import propra.imageconverter.imagecodecs.tga.TgaImageAttributes.VerticalOrigin;
 
@@ -22,7 +21,7 @@ public class TgaRleCompression extends TgaCompression {
 
 	@Override
 	public TgaPixelDecodeValues uncompressPixelData(final TgaPixelDecodeValues values) throws ConversionException {
-		final InternalImage image = new InternalMemoryImage(values.dimension);
+		final InternalImage image = InternalImage.createInternalImage(values.dimension);
 
 		final InputStream in = values.compressedPixelData;
 

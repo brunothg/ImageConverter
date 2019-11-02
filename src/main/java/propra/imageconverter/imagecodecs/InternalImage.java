@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 /**
  * Interne Repräsentation eines Bildes
@@ -43,4 +44,30 @@ public interface InternalImage {
 	 */
 	public Dimension getSize();
 
+	/**
+	 * Erstellt ein {@link InternalImage}
+	 *
+	 * @param size Größe des Bildes
+	 * @return Ein passendes {@link InternalImage}
+	 */
+	public static InternalImage createInternalImage(final Dimension size) {
+		final long freeMemory = Runtime.getRuntime().freeMemory();
+		final long requiredMemory = size.height * size.width * 3;
+
+		if (Math.max(freeMemory * 0.6, freeMemory - (1024 * 1024 * 50)) < requiredMemory) {
+			try {
+				return new InternalFileImage(size);
+			} catch (final IOException e) {
+				return new InternalMemoryImage(size);
+			}
+		} else {
+			return new InternalMemoryImage(size);
+		}
+
+	}
+
+	/**
+	 * Schließt das {@link InternalImage} und gibt ggf. die benutzten Resourcen frei
+	 */
+	public void close();
 }

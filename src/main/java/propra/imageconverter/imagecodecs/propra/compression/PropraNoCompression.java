@@ -8,7 +8,6 @@ import java.io.OutputStream;
 
 import propra.imageconverter.imagecodecs.ConversionException;
 import propra.imageconverter.imagecodecs.InternalImage;
-import propra.imageconverter.imagecodecs.InternalMemoryImage;
 
 /**
  * Liest/Schreibt Pixeldaten ohne Kompremierung
@@ -21,7 +20,7 @@ public class PropraNoCompression extends PropraCompression {
 	@Override
 	public PropraPixelDecodeValues uncompressPixelData(final PropraPixelDecodeValues values)
 			throws ConversionException {
-		final InternalImage image = new InternalMemoryImage(values.dimension);
+		final InternalImage image = InternalImage.createInternalImage(values.dimension);
 
 		final InputStream in = values.compressedPixelData;
 		for (int y = 0; y < values.dimension.height; y++) {

@@ -54,6 +54,7 @@ public class ImageConverter {
 
 		final InternalImage image = inputCodec.readImage(Files.newInputStream(parameters.getInputFile()));
 		outputCodec.writeImage(image, Files.newOutputStream(parameters.getOutputFile()));
+		image.close();
 	}
 
 	/**
