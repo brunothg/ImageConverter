@@ -40,7 +40,6 @@ public abstract class PropraCompression {
 	public abstract static class PropraPixelCompressionValues {
 		public Dimension dimension;
 		public int pixelResolution;
-		public byte[] compressedPixelData;
 		public BufferedImage uncompressedPixelData;
 	}
 
