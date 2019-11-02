@@ -2,12 +2,13 @@ package propra.imageconverter.imagecodecs.propra.compression;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import propra.imageconverter.imagecodecs.ConversionException;
+import propra.imageconverter.imagecodecs.InternalImage;
+import propra.imageconverter.imagecodecs.InternalMemoryImage;
 
 /**
  * Liest/Schreibt Pixeldaten ohne Kompremierung
@@ -20,8 +21,7 @@ public class PropraNoCompression extends PropraCompression {
 	@Override
 	public PropraPixelDecodeValues uncompressPixelData(final PropraPixelDecodeValues values)
 			throws ConversionException {
-		final BufferedImage image = new BufferedImage(values.dimension.width, values.dimension.height,
-				BufferedImage.TYPE_INT_RGB);
+		final InternalImage image = new InternalMemoryImage(values.dimension);
 
 		final InputStream in = values.compressedPixelData;
 		for (int y = 0; y < values.dimension.height; y++) {
@@ -38,7 +38,7 @@ public class PropraNoCompression extends PropraCompression {
 					final int b = Byte.toUnsignedInt(pixel[1]);
 					final int r = Byte.toUnsignedInt(pixel[2]);
 
-					image.setRGB(x, y, new Color(r, g, b).getRGB());
+					image.setPixel(new Point(x, y), new Color(r, g, b));
 				} catch (final IOException e) {
 					throw new ConversionException(
 							"Pixel konnte nicht gelesen werden: " + new Point(x, y) + " : " + e.getMessage(), e);
@@ -58,8 +58,7 @@ public class PropraNoCompression extends PropraCompression {
 		for (int y = 0; y < values.dimension.height; y++) {
 			for (int x = 0; x < values.dimension.width; x++) {
 
-				final int rgb = values.uncompressedPixelData.getRGB(x, y);
-				final Color color = new Color(rgb);
+				final Color color = values.uncompressedPixelData.getPixel(new Point(x, y));
 
 				try {
 					out.write(new byte[] { (byte) color.getGreen(), (byte) color.getBlue(), (byte) color.getRed() });

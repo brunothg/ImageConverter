@@ -1,11 +1,11 @@
 package propra.imageconverter.imagecodecs.propra.compression;
 
 import java.awt.Dimension;
-import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import propra.imageconverter.imagecodecs.ConversionException;
+import propra.imageconverter.imagecodecs.InternalImage;
 
 /**
  * Interface für verschiedene Kompressionsverfahren
@@ -40,7 +40,7 @@ public abstract class PropraCompression {
 	public abstract static class PropraPixelCompressionValues {
 		public Dimension dimension;
 		public int pixelResolution;
-		public BufferedImage uncompressedPixelData;
+		public InternalImage uncompressedPixelData;
 	}
 
 	public static class PropraPixelDecodeValues extends PropraPixelCompressionValues {

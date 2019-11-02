@@ -2,12 +2,13 @@ package propra.imageconverter.imagecodecs.propra.compression;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import propra.imageconverter.imagecodecs.ConversionException;
+import propra.imageconverter.imagecodecs.InternalImage;
+import propra.imageconverter.imagecodecs.InternalMemoryImage;
 
 /**
  * Liest/Schreibt Pixeldaten mit RLE Kompremierung
@@ -20,8 +21,7 @@ public class PropraRleCompression extends PropraCompression {
 	@Override
 	public PropraPixelDecodeValues uncompressPixelData(final PropraPixelDecodeValues values)
 			throws ConversionException {
-		final BufferedImage image = new BufferedImage(values.dimension.width, values.dimension.height,
-				BufferedImage.TYPE_INT_RGB);
+		final InternalImage image = new InternalMemoryImage(values.dimension);
 
 		final InputStream in = values.compressedPixelData;
 
@@ -41,14 +41,14 @@ public class PropraRleCompression extends PropraCompression {
 					final Color pixel = this.readPixel(in);
 
 					for (int i = 0; i < rleCounter; i++) {
-						image.setRGB(pixelPosition.x, pixelPosition.y, pixel.getRGB());
+						image.setPixel(pixelPosition, pixel);
 
 						pixelPosition = pixelLoop.increment();
 					}
 				} else {
 					for (int i = 0; i < rleCounter; i++) {
 						final Color pixel = this.readPixel(in);
-						image.setRGB(pixelPosition.x, pixelPosition.y, pixel.getRGB());
+						image.setPixel(pixelPosition, pixel);
 
 						pixelPosition = pixelLoop.increment();
 					}
@@ -88,8 +88,7 @@ public class PropraRleCompression extends PropraCompression {
 		Color actualColor = null;
 		int colorCounter = 0;
 		while (pixelPosition != null) {
-			final int rgb = values.uncompressedPixelData.getRGB(pixelPosition.x, pixelPosition.y);
-			final Color color = new Color(rgb);
+			final Color color = values.uncompressedPixelData.getPixel(pixelPosition);
 
 			if (actualColor == null) {
 				actualColor = color;

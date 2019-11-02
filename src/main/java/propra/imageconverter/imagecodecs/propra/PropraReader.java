@@ -13,7 +13,6 @@ import java.util.Objects;
 
 import propra.imageconverter.imagecodecs.ConversionException;
 import propra.imageconverter.imagecodecs.InternalImage;
-import propra.imageconverter.imagecodecs.InternalMemoryImage;
 import propra.imageconverter.imagecodecs.propra.PropraChecksum.PropraChecksumInputStream;
 import propra.imageconverter.imagecodecs.propra.compression.PropraCompression;
 import propra.imageconverter.imagecodecs.propra.compression.PropraCompression.PropraPixelDecodeValues;
@@ -87,7 +86,7 @@ public class PropraReader implements Closeable {
 			throw new ConversionException("Weitere Daten nach dem Bild gefunden");
 		}
 
-		final InternalImage internalImage = new InternalMemoryImage(compressionValues.uncompressedPixelData);
+		final InternalImage internalImage = compressionValues.uncompressedPixelData;
 		return internalImage;
 	}
 

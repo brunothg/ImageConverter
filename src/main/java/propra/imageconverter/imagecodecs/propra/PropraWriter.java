@@ -78,7 +78,7 @@ public class PropraWriter implements Closeable {
 
 				final PropraCompression createCompressionInstance = this.compressionType.createCompressionInstance();
 				PropraPixelEncodeValues compressionValues = new PropraPixelEncodeValues();
-				compressionValues.uncompressedPixelData = image.getPixelData();
+				compressionValues.uncompressedPixelData = image;
 				compressionValues.pixelResolution = pixelResolution;
 				compressionValues.dimension = dimension;
 				compressionValues.compressedPixelData = pixelDataOutputStream;
@@ -109,7 +109,7 @@ public class PropraWriter implements Closeable {
 
 			final PropraCompression createCompressionInstance = this.compressionType.createCompressionInstance();
 			PropraPixelEncodeValues compressionValues = new PropraPixelEncodeValues();
-			compressionValues.uncompressedPixelData = image.getPixelData();
+			compressionValues.uncompressedPixelData = image;
 			compressionValues.pixelResolution = pixelResolution;
 			compressionValues.dimension = dimension;
 			compressionValues.compressedPixelData = pixelDataOutputStream;
