@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * Inputstream, der einen anderen als Basis nimmt, aber die zu lesenden Bytes
  * auf ein Maximum begrenzt.
- * 
+ *
  * @author marvin
  *
  */
@@ -19,14 +19,14 @@ public class LimitInputStream extends InputStream {
 
 	private BigInteger counter;
 
-	public LimitInputStream(InputStream in, BigInteger maxLength) {
+	public LimitInputStream(final InputStream in, final BigInteger maxLength) {
 		this.in = in;
 		Objects.requireNonNull(in, "in");
 		this.maxLength = maxLength;
 		this.counter = BigInteger.ZERO;
 	}
 
-	public LimitInputStream(InputStream in, long maxLength) {
+	public LimitInputStream(final InputStream in, final long maxLength) {
 		this(in, BigInteger.valueOf(maxLength));
 	}
 
@@ -43,7 +43,7 @@ public class LimitInputStream extends InputStream {
 	}
 
 	@Override
-	public int read(byte[] b, int off, int len) throws IOException {
+	public int read(final byte[] b, final int off, final int len) throws IOException {
 		final int read = this.in.read(b, off, len);
 
 		this.counter = this.counter.add(BigInteger.valueOf(read));
@@ -60,7 +60,7 @@ public class LimitInputStream extends InputStream {
 	}
 
 	@Override
-	public synchronized void mark(int readlimit) {
+	public synchronized void mark(final int readlimit) {
 	}
 
 	@Override

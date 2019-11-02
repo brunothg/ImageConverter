@@ -27,7 +27,7 @@ public class ByteInputStream extends FilterInputStream implements Closeable {
 	 *
 	 * @param in {@link InputStream} aus dem gelesen wird
 	 */
-	public ByteInputStream(InputStream in) {
+	public ByteInputStream(final InputStream in) {
 		super(in);
 		Objects.requireNonNull(in, "in");
 		this.setByteOrder(ByteOrder.nativeOrder());
@@ -40,7 +40,7 @@ public class ByteInputStream extends FilterInputStream implements Closeable {
 	 * @param in        {@link InputStream} aus dem gelesen wird
 	 * @param byteOrder Initiale {@link ByteOrder}
 	 */
-	public ByteInputStream(InputStream in, ByteOrder byteOrder) {
+	public ByteInputStream(final InputStream in, final ByteOrder byteOrder) {
 		this(in);
 		this.setByteOrder(byteOrder);
 	}
@@ -53,7 +53,7 @@ public class ByteInputStream extends FilterInputStream implements Closeable {
 	 * @return Den gelesenen String
 	 * @throws IOException
 	 */
-	public String readOrderedString(int length, Charset charset) throws IOException {
+	public String readOrderedString(final int length, final Charset charset) throws IOException {
 		final byte[] bytes = this.readOrderedBytes(length);
 		if (bytes.length != length) {
 			throw new IOException("Nicht genügend bytes vorhanden");
@@ -116,7 +116,7 @@ public class ByteInputStream extends FilterInputStream implements Closeable {
 	 * @return Die vorzeichenlose Zahl
 	 * @throws IOException
 	 */
-	public BigInteger readOrderedUnsignedNumber(int length) throws IOException {
+	public BigInteger readOrderedUnsignedNumber(final int length) throws IOException {
 		final byte[] bytes = this.readOrderedBytes(length);
 		if (bytes.length != length) {
 			throw new IOException("Nicht genügend bytes vorhanden");
@@ -133,7 +133,7 @@ public class ByteInputStream extends FilterInputStream implements Closeable {
 	 * @return Byte-Array mit den gelesenen Bytes in der aktuellen Byte.Reihenfolge
 	 * @throws IOException
 	 */
-	public byte[] readOrderedBytes(int length) throws IOException {
+	public byte[] readOrderedBytes(final int length) throws IOException {
 
 		final byte[] buffer = new byte[length];
 		final int read = this.in.read(buffer);
@@ -154,7 +154,7 @@ public class ByteInputStream extends FilterInputStream implements Closeable {
 	 *
 	 * @param bytes Byte-Array, das umgedreht werden soll
 	 */
-	protected static void reverse(byte[] bytes) {
+	protected static void reverse(final byte[] bytes) {
 		final int length = bytes.length;
 
 		for (int i = 0; i < (length / 2); i++) {
@@ -174,7 +174,7 @@ public class ByteInputStream extends FilterInputStream implements Closeable {
 	/**
 	 * @param byteOrder the byteOrder to set
 	 */
-	public void setByteOrder(ByteOrder byteOrder) {
+	public void setByteOrder(final ByteOrder byteOrder) {
 		this.byteOrder = byteOrder;
 	}
 

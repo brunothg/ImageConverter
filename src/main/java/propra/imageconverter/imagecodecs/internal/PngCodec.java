@@ -11,7 +11,7 @@ import propra.imageconverter.imagecodecs.InternalImage;
 
 /**
  * Codec für PNGs
- * 
+ *
  * @author marvin
  *
  */
@@ -20,7 +20,7 @@ public class PngCodec implements ImageCodec {
 	private static final String FILE_EXTENSION = "png";
 
 	@Override
-	public InternalImage readImage(InputStream in) throws ConversionException {
+	public InternalImage readImage(final InputStream in) throws ConversionException {
 		try {
 			return new InternalImage(ImageIO.read(in));
 		} catch (final Exception e) {
@@ -29,7 +29,7 @@ public class PngCodec implements ImageCodec {
 	}
 
 	@Override
-	public void writeImage(InternalImage image, OutputStream out) throws ConversionException {
+	public void writeImage(final InternalImage image, final OutputStream out) throws ConversionException {
 		try {
 			ImageIO.write(image.getPixelData(), FILE_EXTENSION, out);
 		} catch (final Exception e) {

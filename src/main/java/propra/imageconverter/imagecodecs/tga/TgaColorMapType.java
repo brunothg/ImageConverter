@@ -15,7 +15,7 @@ public enum TgaColorMapType {
 	 */
 	private int id;
 
-	private TgaColorMapType(int id) {
+	private TgaColorMapType(final int id) {
 		this.id = id;
 	}
 
@@ -29,7 +29,7 @@ public enum TgaColorMapType {
 	 * @param id Farbpalettentyp Id
 	 * @return {@link TgaColorMapType} oder null, wenn nicht vorhanden
 	 */
-	public static TgaColorMapType fromId(int id) {
+	public static TgaColorMapType fromId(final int id) {
 		for (final TgaColorMapType type : TgaColorMapType.values()) {
 			if (type.getId() == id) {
 				return type;

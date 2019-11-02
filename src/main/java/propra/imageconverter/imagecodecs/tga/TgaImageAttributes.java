@@ -21,10 +21,10 @@ public class TgaImageAttributes {
 
 	/**
 	 * Es werden nur die unteren 4 bit beachtet
-	 * 
+	 *
 	 * @param attributeBitCount the attributeBitCount to set
 	 */
-	public void setAttributeBitCount(int attributeBitCount) {
+	public void setAttributeBitCount(final int attributeBitCount) {
 		this.attributeBitCount = attributeBitCount & 0B00001111;
 	}
 
@@ -38,7 +38,7 @@ public class TgaImageAttributes {
 	/**
 	 * @param horizontalOrigin the horizontalOrigin to set
 	 */
-	public void setHorizontalOrigin(HorizontalOrigin horizontalOrigin) {
+	public void setHorizontalOrigin(final HorizontalOrigin horizontalOrigin) {
 		this.horizontalOrigin = horizontalOrigin;
 	}
 
@@ -52,7 +52,7 @@ public class TgaImageAttributes {
 	/**
 	 * @param verticalOrigin the verticalOrigin to set
 	 */
-	public void setVerticalOrigin(VerticalOrigin verticalOrigin) {
+	public void setVerticalOrigin(final VerticalOrigin verticalOrigin) {
 		this.verticalOrigin = verticalOrigin;
 	}
 
@@ -77,7 +77,7 @@ public class TgaImageAttributes {
 		return attributes;
 	}
 
-	public static int toByte(TgaImageAttributes attributes) {
+	public static int toByte(final TgaImageAttributes attributes) {
 		int attributeBits = 0;
 
 		attributeBits = attributeBits | attributes.getAttributeBitCount();

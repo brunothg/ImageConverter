@@ -19,7 +19,7 @@ public class InternalImage {
 	public InternalImage() {
 	}
 
-	public InternalImage(BufferedImage pixelData) {
+	public InternalImage(final BufferedImage pixelData) {
 		this();
 
 		this.setPixelData(pixelData);
@@ -27,7 +27,7 @@ public class InternalImage {
 
 	/**
 	 * Gibt die Pixeldaten als BufferedImage. Kann null sein.
-	 * 
+	 *
 	 * @return Die Pixeldaten oder null, wenn nicht vorhanden
 	 */
 	public BufferedImage getPixelData() {
@@ -36,21 +36,21 @@ public class InternalImage {
 
 	/**
 	 * Setzt die Pixeldaten
-	 * 
+	 *
 	 * @param pixelData Die neuen Pixeldaten
 	 */
-	public void setPixelData(BufferedImage pixelData) {
+	public void setPixelData(final BufferedImage pixelData) {
 		this.pixelData = pixelData;
 	}
 
 	/**
 	 * Gibt die Maße des Bildes. Kann null sein.
-	 * 
+	 *
 	 * @return Die Dimension des Bilder oder null, wenn keine Bilddaten vorhanden
 	 *         sind
 	 */
 	public Dimension getSize() {
-		final BufferedImage data = getPixelData();
+		final BufferedImage data = this.getPixelData();
 		if (data == null) {
 			return null;
 		}

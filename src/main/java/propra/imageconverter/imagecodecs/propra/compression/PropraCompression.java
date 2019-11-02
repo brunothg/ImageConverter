@@ -10,7 +10,7 @@ import propra.imageconverter.imagecodecs.ConversionException;
 /**
  * Interface für verschiedene Kompressionsverfahren
  *
- * @author bruns_m
+ * @author marvin
  *
  */
 public abstract class PropraCompression {

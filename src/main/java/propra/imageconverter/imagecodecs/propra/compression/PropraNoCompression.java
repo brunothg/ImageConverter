@@ -20,7 +20,7 @@ import propra.imageconverter.imagecodecs.ConversionException;
 public class PropraNoCompression extends PropraCompression {
 
 	@Override
-	public PropraPixelDecodeValues uncompressPixelData(PropraPixelDecodeValues values) throws ConversionException {
+	public PropraPixelDecodeValues uncompressPixelData(final PropraPixelDecodeValues values) throws ConversionException {
 		final BufferedImage image = new BufferedImage(values.dimension.width, values.dimension.height,
 				BufferedImage.TYPE_INT_RGB);
 
@@ -56,7 +56,7 @@ public class PropraNoCompression extends PropraCompression {
 	}
 
 	@Override
-	public PropraPixelEncodeValues compressPixelData(PropraPixelEncodeValues values) throws ConversionException {
+	public PropraPixelEncodeValues compressPixelData(final PropraPixelEncodeValues values) throws ConversionException {
 
 		final OutputStream out = new BufferedOutputStream(values.compressedPixelData, 1024);
 

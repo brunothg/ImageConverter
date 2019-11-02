@@ -29,7 +29,7 @@ public class ReturnCodeWatcher {
 	 *
 	 * @param function Auszuführender Code
 	 */
-	public static void watch(Callable<Void> function) {
+	public static void watch(final Callable<Void> function) {
 		try {
 			function.call();
 		} catch (final Throwable t) {

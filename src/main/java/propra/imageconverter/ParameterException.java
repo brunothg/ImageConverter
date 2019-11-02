@@ -13,19 +13,19 @@ public class ParameterException extends RuntimeException {
 		super();
 	}
 
-	public ParameterException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+	public ParameterException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
 
-	public ParameterException(String message, Throwable cause) {
+	public ParameterException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 
-	public ParameterException(String message) {
+	public ParameterException(final String message) {
 		super(message);
 	}
 
-	public ParameterException(Throwable cause) {
+	public ParameterException(final Throwable cause) {
 		super(cause);
 	}
 

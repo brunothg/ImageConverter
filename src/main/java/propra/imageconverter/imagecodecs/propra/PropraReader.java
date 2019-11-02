@@ -29,7 +29,7 @@ public class PropraReader implements Closeable {
 
 	private final ByteInputStream in;
 
-	public PropraReader(InputStream in) {
+	public PropraReader(final InputStream in) {
 		this.in = new ByteInputStream(Objects.requireNonNull(in, "in"));
 	}
 
@@ -61,7 +61,8 @@ public class PropraReader implements Closeable {
 
 		final long checksum = this.readChecksum();
 
-		PropraChecksumInputStream pixelDataInputStream = new PropraChecksum.PropraChecksumInputStream(getPixelDataInputStream(pixelDataSize));
+		final PropraChecksumInputStream pixelDataInputStream = new PropraChecksum.PropraChecksumInputStream(
+				this.getPixelDataInputStream(pixelDataSize));
 		final PropraCompression compression = compressionType.createCompressionInstance();
 		PropraPixelDecodeValues compressionValues = new PropraPixelDecodeValues();
 		compressionValues.dimension = dimension;
@@ -70,7 +71,7 @@ public class PropraReader implements Closeable {
 		compressionValues = compression.uncompressPixelData(compressionValues);
 		try {
 			pixelDataInputStream.close();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
 
@@ -109,7 +110,7 @@ public class PropraReader implements Closeable {
 		this.in.setByteOrder(ByteOrder.BIG_ENDIAN);
 		return new LimitInputStream(this.in, pixelDataSize);
 	}
-	
+
 	private long readChecksum() throws ConversionException {
 		this.in.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 		try {
