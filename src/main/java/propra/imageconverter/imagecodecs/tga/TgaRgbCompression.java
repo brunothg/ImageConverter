@@ -1,4 +1,4 @@
-package propra.imageconverter.codecs.tga;
+package propra.imageconverter.imagecodecs.tga;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -10,9 +10,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.function.Function;
 
-import propra.imageconverter.codecs.tga.TgaImageAttributes.HorizontalOrigin;
-import propra.imageconverter.codecs.tga.TgaImageAttributes.VerticalOrigin;
 import propra.imageconverter.imagecodecs.ConversionException;
+import propra.imageconverter.imagecodecs.tga.TgaImageAttributes.HorizontalOrigin;
+import propra.imageconverter.imagecodecs.tga.TgaImageAttributes.VerticalOrigin;
 
 /**
  * Liest/Schreibt unkomprimierte RGB Daten

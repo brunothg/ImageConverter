@@ -1,4 +1,4 @@
-package propra.imageconverter.codecs.tga;
+package propra.imageconverter.imagecodecs.tga;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -8,11 +8,11 @@ import java.io.OutputStream;
 import java.nio.ByteOrder;
 import java.util.Objects;
 
-import propra.imageconverter.codecs.tga.TgaCompression.TgaPixelEncodeValues;
-import propra.imageconverter.codecs.tga.TgaImageAttributes.HorizontalOrigin;
-import propra.imageconverter.codecs.tga.TgaImageAttributes.VerticalOrigin;
 import propra.imageconverter.imagecodecs.ConversionException;
 import propra.imageconverter.imagecodecs.InternalImage;
+import propra.imageconverter.imagecodecs.tga.TgaCompression.TgaPixelEncodeValues;
+import propra.imageconverter.imagecodecs.tga.TgaImageAttributes.HorizontalOrigin;
+import propra.imageconverter.imagecodecs.tga.TgaImageAttributes.VerticalOrigin;
 import propra.imageconverter.utils.ByteOutputStream;
 
 /**

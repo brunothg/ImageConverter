@@ -1,4 +1,4 @@
-package propra.imageconverter.codecs.propra;
+package propra.imageconverter.imagecodecs.propra;
 
 import java.lang.reflect.InvocationTargetException;
 

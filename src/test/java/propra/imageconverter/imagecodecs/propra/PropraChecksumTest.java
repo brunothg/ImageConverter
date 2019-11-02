@@ -1,4 +1,4 @@
-package propra.imageconverter.codecs.propra;
+package propra.imageconverter.imagecodecs.propra;
 
 import static org.junit.Assert.assertEquals;
 
@@ -9,8 +9,9 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
-import propra.imageconverter.codecs.propra.PropraChecksum.PropraChecksumInputStream;
-import propra.imageconverter.codecs.propra.PropraChecksum.PropraChecksumOutputStream;
+import propra.imageconverter.imagecodecs.propra.PropraChecksum;
+import propra.imageconverter.imagecodecs.propra.PropraChecksum.PropraChecksumInputStream;
+import propra.imageconverter.imagecodecs.propra.PropraChecksum.PropraChecksumOutputStream;
 
 public class PropraChecksumTest {
 

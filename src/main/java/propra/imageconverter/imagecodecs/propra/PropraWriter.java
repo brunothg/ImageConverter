@@ -1,4 +1,4 @@
-package propra.imageconverter.codecs.propra;
+package propra.imageconverter.imagecodecs.propra;
 
 import java.awt.Dimension;
 import java.io.ByteArrayOutputStream;
@@ -13,10 +13,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
-import propra.imageconverter.codecs.propra.PropraChecksum.PropraChecksumOutputStream;
-import propra.imageconverter.codecs.propra.PropraCompression.PropraPixelEncodeValues;
 import propra.imageconverter.imagecodecs.ConversionException;
 import propra.imageconverter.imagecodecs.InternalImage;
+import propra.imageconverter.imagecodecs.propra.PropraChecksum.PropraChecksumOutputStream;
+import propra.imageconverter.imagecodecs.propra.PropraCompression.PropraPixelEncodeValues;
 import propra.imageconverter.utils.ByteOutputStream;
 
 /**

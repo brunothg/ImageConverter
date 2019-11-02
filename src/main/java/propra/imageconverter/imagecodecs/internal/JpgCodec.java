@@ -1,4 +1,4 @@
-package propra.imageconverter.codecs.internal;
+package propra.imageconverter.imagecodecs.internal;
 
 import java.io.InputStream;
 import java.io.OutputStream;

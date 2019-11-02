@@ -1,4 +1,4 @@
-package propra.imageconverter.codecs.propra;
+package propra.imageconverter.imagecodecs.propra;
 
 import java.awt.Dimension;
 import java.io.Closeable;
@@ -10,10 +10,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
 
-import propra.imageconverter.codecs.propra.PropraChecksum.PropraChecksumInputStream;
-import propra.imageconverter.codecs.propra.PropraCompression.PropraPixelDecodeValues;
 import propra.imageconverter.imagecodecs.ConversionException;
 import propra.imageconverter.imagecodecs.InternalImage;
+import propra.imageconverter.imagecodecs.propra.PropraChecksum.PropraChecksumInputStream;
+import propra.imageconverter.imagecodecs.propra.PropraCompression.PropraPixelDecodeValues;
 import propra.imageconverter.utils.ByteInputStream;
 import propra.imageconverter.utils.LimitInputStream;
 

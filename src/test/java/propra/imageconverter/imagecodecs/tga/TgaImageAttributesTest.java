@@ -1,11 +1,12 @@
-package propra.imageconverter.codecs.tga;
+package propra.imageconverter.imagecodecs.tga;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import propra.imageconverter.codecs.tga.TgaImageAttributes.HorizontalOrigin;
-import propra.imageconverter.codecs.tga.TgaImageAttributes.VerticalOrigin;
+import propra.imageconverter.imagecodecs.tga.TgaImageAttributes;
+import propra.imageconverter.imagecodecs.tga.TgaImageAttributes.HorizontalOrigin;
+import propra.imageconverter.imagecodecs.tga.TgaImageAttributes.VerticalOrigin;
 
 public class TgaImageAttributesTest {
 

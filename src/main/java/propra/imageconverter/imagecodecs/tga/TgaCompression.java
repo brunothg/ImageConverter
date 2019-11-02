@@ -1,4 +1,4 @@
-package propra.imageconverter.codecs.tga;
+package propra.imageconverter.imagecodecs.tga;
 
 import java.awt.Dimension;
 import java.awt.Point;
