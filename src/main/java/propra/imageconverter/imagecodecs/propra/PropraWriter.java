@@ -20,6 +20,7 @@ import propra.imageconverter.imagecodecs.propra.PropraChecksum.PropraChecksumOut
 import propra.imageconverter.imagecodecs.propra.compression.PropraCompression;
 import propra.imageconverter.imagecodecs.propra.compression.PropraCompression.PropraPixelEncodeValues;
 import propra.imageconverter.utils.ByteOutputStream;
+import propra.imageconverter.utils.CounterOutputStream;
 
 /**
  *
@@ -59,22 +60,22 @@ public class PropraWriter implements Closeable {
 
 		this.writeCompressionType(this.compressionType);
 
-		// TODO Berechnung bei Kompremierung falsch
-		final BigInteger pixelDataSize = BigInteger.valueOf((pixelResolution / 8) * dimension.height * dimension.width);
-		this.writePixelDataSize(pixelDataSize);
-
 		try {
 			// Versuche Pixeldaten in temp Datei zwischenzuspeichern, die Checksumme zu
 			// berechnen/schreiben und dann die Pixeldaten aus der temp Datei zu kopieren
 			final Path pixelDataTempFile = Files.createTempFile("propra", "imagedata");
 			if (!Files.isReadable(pixelDataTempFile) || !Files.isWritable(pixelDataTempFile)) {
 				Files.delete(pixelDataTempFile);
-				throw new IOException("Not readable nad writeable");
+				throw new IOException("Not readable and writeable");
 			}
 
 			try {
-				final PropraChecksumOutputStream pixelDataOutputStream = new PropraChecksum.PropraChecksumOutputStream(
+				final CounterOutputStream counterOutputStream = new CounterOutputStream(
 						Files.newOutputStream(pixelDataTempFile));
+				final PropraChecksumOutputStream propraChecksumOutputStream = new PropraChecksum.PropraChecksumOutputStream(
+						counterOutputStream);
+				final OutputStream pixelDataOutputStream = propraChecksumOutputStream;
+
 				final PropraCompression createCompressionInstance = this.compressionType.createCompressionInstance();
 				PropraPixelEncodeValues compressionValues = new PropraPixelEncodeValues();
 				compressionValues.uncompressedPixelData = image.getPixelData();
@@ -84,7 +85,10 @@ public class PropraWriter implements Closeable {
 				compressionValues = createCompressionInstance.compressPixelData(compressionValues);
 				pixelDataOutputStream.close();
 
-				final long checksum = pixelDataOutputStream.getActualChecksum();
+				final BigInteger pixelDataSize = counterOutputStream.getActualCounter();
+				this.writePixelDataSize(pixelDataSize);
+
+				final long checksum = propraChecksumOutputStream.getActualChecksum();
 				this.writeChecksum(checksum);
 
 				final InputStream pixelDataInputStream = Files.newInputStream(pixelDataTempFile);
@@ -97,8 +101,11 @@ public class PropraWriter implements Closeable {
 			}
 		} catch (final IOException e) {
 			// Fallback auf alte in memory Methode
-			final ByteArrayOutputStream pixelDataOutputStream = new ByteArrayOutputStream(
-					pixelDataSize.intValueExact());
+			final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+			final CounterOutputStream counterOutputStream = new CounterOutputStream(byteArrayOutputStream);
+			final PropraChecksumOutputStream propraChecksumOutputStream = new PropraChecksum.PropraChecksumOutputStream(
+					counterOutputStream);
+			final OutputStream pixelDataOutputStream = propraChecksumOutputStream;
 
 			final PropraCompression createCompressionInstance = this.compressionType.createCompressionInstance();
 			PropraPixelEncodeValues compressionValues = new PropraPixelEncodeValues();
@@ -107,12 +114,19 @@ public class PropraWriter implements Closeable {
 			compressionValues.dimension = dimension;
 			compressionValues.compressedPixelData = pixelDataOutputStream;
 			compressionValues = createCompressionInstance.compressPixelData(compressionValues);
+			try {
+				pixelDataOutputStream.close();
+			} catch (final IOException e1) {
+			}
 
-			@SuppressWarnings("deprecation")
-			final long checksum = PropraChecksum.calculateChecksum(pixelDataOutputStream.toByteArray());
+			final BigInteger pixelDataSize = BigInteger
+					.valueOf((pixelResolution / 8) * dimension.height * dimension.width);
+			this.writePixelDataSize(pixelDataSize);
+
+			final long checksum = propraChecksumOutputStream.getActualChecksum();
 			this.writeChecksum(checksum);
 
-			this.writePixelData(pixelDataOutputStream.toByteArray());
+			this.writePixelData(byteArrayOutputStream);
 		}
 
 	}
@@ -130,10 +144,10 @@ public class PropraWriter implements Closeable {
 		}
 	}
 
-	private void writePixelData(final byte[] compressedPixelData) throws ConversionException {
+	private void writePixelData(final ByteArrayOutputStream pixelDataByteArrayOutputStream) throws ConversionException {
 		this.out.setByteOrder(ByteOrder.BIG_ENDIAN);
 		try {
-			this.out.writeOrderedBytes(compressedPixelData);
+			pixelDataByteArrayOutputStream.writeTo(this.out);
 		} catch (final IOException e) {
 			throw new ConversionException("Pixeldaten konnten nicht geschrieben werden: " + e.getMessage(), e);
 		}

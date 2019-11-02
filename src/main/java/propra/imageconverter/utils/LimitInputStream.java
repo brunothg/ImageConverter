@@ -20,8 +20,7 @@ public class LimitInputStream extends InputStream {
 	private BigInteger counter;
 
 	public LimitInputStream(final InputStream in, final BigInteger maxLength) {
-		this.in = in;
-		Objects.requireNonNull(in, "in");
+		this.in = Objects.requireNonNull(in, "in");
 		this.maxLength = maxLength;
 		this.counter = BigInteger.ZERO;
 	}
@@ -75,7 +74,6 @@ public class LimitInputStream extends InputStream {
 
 	@Override
 	public void close() throws IOException {
-		super.close();
 		this.in.close();
 	}
 }

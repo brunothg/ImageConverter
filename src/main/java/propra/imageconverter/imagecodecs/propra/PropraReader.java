@@ -70,10 +70,11 @@ public class PropraReader implements Closeable {
 		compressionValues.pixelResolution = pixelResolution;
 		compressionValues.compressedPixelData = pixelDataInputStream;
 		compressionValues = compression.uncompressPixelData(compressionValues);
+
+		final boolean isEndOfStream = this.checkEndOfStream();
 		try {
 			pixelDataInputStream.close();
 		} catch (final IOException e) {
-			throw new RuntimeException(e);
 		}
 
 		if (checksum != pixelDataInputStream.getActualChecksum()) {
@@ -81,7 +82,7 @@ public class PropraReader implements Closeable {
 		}
 
 		// Es dürften keine weiteren Bytes mehr vorhanden sein
-		if (!this.checkEndOfStream()) {
+		if (!isEndOfStream) {
 			throw new ConversionException("Weitere Daten nach dem Bild gefunden");
 		}
 
