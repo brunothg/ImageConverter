@@ -235,6 +235,16 @@ public class TgaRleCompression extends TgaCompression {
 				return new Point(this.x, this.y);
 			}
 		}
+
+//		public Point increment(final int times) throws ConversionException {
+//			Point result = new Point(this.x, this.y);
+//
+//			for (int i = 0; i < times; i++) {
+//				result = this.increment();
+//			}
+//
+//			return result;
+//		}
 	}
 
 }

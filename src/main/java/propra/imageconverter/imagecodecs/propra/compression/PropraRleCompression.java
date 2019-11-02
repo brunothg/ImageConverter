@@ -25,17 +25,14 @@ public class PropraRleCompression extends PropraCompression {
 
 		final InputStream in = values.compressedPixelData;
 
-		int x = 0;
-		int y = 0;
-		final int width = values.dimension.width;
-		final int height = values.dimension.height;
-
-		while (y < height) {
+		final PixelLoop pixelLoop = new PixelLoop(values);
+		Point pixelPosition = pixelLoop.init();
+		while (pixelPosition != null) {
 			try {
 				final int steuerbit = in.read();
 				if (steuerbit < 0) {
 					throw new ConversionException(
-							"Steuerbit konnte nicht gelesen werden: " + new Point(x, y) + " : Fehlende Daten");
+							"Steuerbit konnte nicht gelesen werden: " + pixelPosition + " : Fehlende Daten");
 				}
 				final boolean rleRepeat = (steuerbit & 0b10000000) == 0b10000000;
 				final int rleCounter = ((steuerbit & 0b01111111)) + 1;
@@ -44,30 +41,22 @@ public class PropraRleCompression extends PropraCompression {
 					final Color pixel = this.readPixel(in);
 
 					for (int i = 0; i < rleCounter; i++) {
-						image.setRGB(x, y, pixel.getRGB());
+						image.setRGB(pixelPosition.x, pixelPosition.y, pixel.getRGB());
 
-						x++;
-						if (x >= width) {
-							x = 0;
-							y++;
-						}
+						pixelPosition = pixelLoop.increment();
 					}
 				} else {
 					for (int i = 0; i < rleCounter; i++) {
 						final Color pixel = this.readPixel(in);
-						image.setRGB(x, y, pixel.getRGB());
+						image.setRGB(pixelPosition.x, pixelPosition.y, pixel.getRGB());
 
-						x++;
-						if (x >= width) {
-							x = 0;
-							y++;
-						}
+						pixelPosition = pixelLoop.increment();
 					}
 				}
 
 			} catch (final IOException e) {
 				throw new ConversionException(
-						"Pixel konnte nicht gelesen werden: " + new Point(x, y) + " : " + e.getMessage(), e);
+						"Pixel konnte nicht gelesen werden: " + pixelPosition + " : " + e.getMessage(), e);
 			}
 		}
 
@@ -95,26 +84,94 @@ public class PropraRleCompression extends PropraCompression {
 		final OutputStream out = values.compressedPixelData;
 
 		// TODO Kompression verbessern
-		for (int y = 0; y < values.dimension.height; y++) {
-			for (int x = 0; x < values.dimension.width; x++) {
+		final PixelLoop pixelLoop = new PixelLoop(values);
+		Point pixelPosition = pixelLoop.init();
+		while (pixelPosition != null) {
+			final int rgb = values.uncompressedPixelData.getRGB(pixelPosition.x, pixelPosition.y);
+			final Color color = new Color(rgb);
 
-				final int rgb = values.uncompressedPixelData.getRGB(x, y);
-				final Color color = new Color(rgb);
+			try {
+				final boolean rleRepeat = false;
+				final int rleCounter = 1;
+				final int steuerbyte = ((rleCounter - 1) & 0b01111111) + ((rleRepeat) ? 0b10000000 : 0b00000000);
 
-				try {
-					final boolean rleRepeat = false;
-					final int rleCounter = 1;
-					final int steuerbyte = ((rleCounter - 1) & 0b01111111) + ((rleRepeat) ? 0b10000000 : 0b00000000);
-
-					out.write(steuerbyte);
-					out.write(new byte[] { (byte) color.getGreen(), (byte) color.getBlue(), (byte) color.getRed() });
-				} catch (final IOException e) {
-					throw new ConversionException("Pixeldaten können nicht geschrieben werden: " + e.getMessage(), e);
-				}
+				out.write(steuerbyte);
+				out.write(new byte[] { (byte) color.getGreen(), (byte) color.getBlue(), (byte) color.getRed() });
+			} catch (final IOException e) {
+				throw new ConversionException("Pixeldaten können nicht geschrieben werden: " + e.getMessage(), e);
 			}
+
+			pixelPosition = pixelLoop.increment();
 		}
 
 		return values;
+	}
+
+	/**
+	 * Hilfsklasse, zum durchlaufen der Koordinaten
+	 *
+	 * @author marvin
+	 *
+	 */
+	private static class PixelLoop {
+
+		private final PropraPixelCompressionValues values;
+
+		private int x;
+		private int y;
+		private boolean eof;
+
+		public PixelLoop(final PropraPixelCompressionValues values) {
+			this.values = values;
+		}
+
+		/**
+		 * Springt zum Anfang
+		 */
+		public Point init() throws ConversionException {
+			this.x = 0;
+			this.y = 0;
+			this.eof = false;
+
+			return new Point(this.x, this.y);
+		}
+
+		/**
+		 * Inkrementiert und gibt die neuen Koordinaten
+		 *
+		 * @return Neue Koordinate oder null, wenn keine mehr vorhanden
+		 */
+		public Point increment() throws ConversionException {
+			if (this.eof) {
+				throw new ConversionException("No more Pixels");
+			}
+
+			this.x++;
+			if (this.x >= this.values.dimension.width) {
+				this.x = 0;
+
+				this.y++;
+				if (this.y >= this.values.dimension.height) {
+					this.eof = true;
+				}
+			}
+
+			if (this.eof) {
+				return null;
+			} else {
+				return new Point(this.x, this.y);
+			}
+		}
+
+//		public Point increment(final int times) throws ConversionException {
+//			Point result = new Point(this.x, this.y);
+//
+//			for (int i = 0; i < times; i++) {
+//				result = this.increment();
+//			}
+//
+//			return result;
+//		}
 	}
 
 }
