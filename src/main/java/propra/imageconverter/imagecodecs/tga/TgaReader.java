@@ -15,7 +15,6 @@ import java.util.Objects;
 
 import propra.imageconverter.imagecodecs.ConversionException;
 import propra.imageconverter.imagecodecs.InternalImage;
-import propra.imageconverter.imagecodecs.InternalMemoryImage;
 import propra.imageconverter.imagecodecs.tga.compression.TgaCompression;
 import propra.imageconverter.imagecodecs.tga.compression.TgaCompression.TgaPixelDecodeValues;
 import propra.imageconverter.utils.ByteInputStream;;
@@ -95,7 +94,7 @@ public class TgaReader implements Closeable {
 		compressionValues.compressedPixelData = this.getPixelDataInputStream(pixelDataSize);
 		compressionValues = compression.uncompressPixelData(compressionValues);
 
-		final InternalImage internalImage = new InternalMemoryImage(compressionValues.uncompressedPixelData);
+		final InternalImage internalImage = compressionValues.uncompressedPixelData;
 		return internalImage;
 	}
 

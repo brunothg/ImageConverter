@@ -2,13 +2,14 @@ package propra.imageconverter.imagecodecs.tga.compression;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.function.Function;
 
 import propra.imageconverter.imagecodecs.ConversionException;
+import propra.imageconverter.imagecodecs.InternalImage;
+import propra.imageconverter.imagecodecs.InternalMemoryImage;
 import propra.imageconverter.imagecodecs.tga.TgaImageAttributes.HorizontalOrigin;
 import propra.imageconverter.imagecodecs.tga.TgaImageAttributes.VerticalOrigin;
 
@@ -22,8 +23,7 @@ public class TgaRgbCompression extends TgaCompression {
 
 	@Override
 	public TgaPixelDecodeValues uncompressPixelData(final TgaPixelDecodeValues values) throws ConversionException {
-		final BufferedImage image = new BufferedImage(values.dimension.width, values.dimension.height,
-				BufferedImage.TYPE_INT_RGB);
+		final InternalImage image = new InternalMemoryImage(values.dimension);
 
 		final InputStream in = values.compressedPixelData;
 
@@ -39,7 +39,7 @@ public class TgaRgbCompression extends TgaCompression {
 				final int g = Byte.toUnsignedInt(pixel[1]);
 				final int r = Byte.toUnsignedInt(pixel[2]);
 
-				image.setRGB(point.x, point.y, new Color(r, g, b).getRGB());
+				image.setPixel(point, new Color(r, g, b));
 			} catch (final IOException e) {
 				return new ConversionException("Pixel konnte nicht gelesen werden: " + point + " : " + e.getMessage(),
 						e);
@@ -55,8 +55,7 @@ public class TgaRgbCompression extends TgaCompression {
 	public TgaPixelEncodeValues compressPixelData(final TgaPixelEncodeValues values) throws ConversionException {
 		final OutputStream out = values.compressedPixelData;
 		this.pixelLoop(values, (point) -> {
-			final int rgb = values.uncompressedPixelData.getRGB(point.x, point.y);
-			final Color color = new Color(rgb);
+			final Color color = values.uncompressedPixelData.getPixel(point);
 
 			try {
 				out.write(new byte[] { (byte) color.getBlue(), (byte) color.getGreen(), (byte) color.getRed() });

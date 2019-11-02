@@ -2,11 +2,11 @@ package propra.imageconverter.imagecodecs.tga.compression;
 
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import propra.imageconverter.imagecodecs.ConversionException;
+import propra.imageconverter.imagecodecs.InternalImage;
 import propra.imageconverter.imagecodecs.tga.TgaImageAttributes;
 
 /**
@@ -42,7 +42,7 @@ public abstract class TgaCompression {
 		public int pixelResolution;
 		public Point origin;
 		public TgaImageAttributes imageAttributes;
-		public BufferedImage uncompressedPixelData;
+		public InternalImage uncompressedPixelData;
 	}
 
 	public static class TgaPixelDecodeValues extends TgaPixelCompressionValues {

@@ -75,7 +75,7 @@ public class TgaWriter implements Closeable {
 		compressionValues.pixelResolution = pixelResolution;
 		compressionValues.origin = origin;
 		compressionValues.imageAttributes = imageAttributes;
-		compressionValues.uncompressedPixelData = image.getPixelData();
+		compressionValues.uncompressedPixelData = image;
 		compressionValues.compressedPixelData = this.getPixelDataOutputStream();
 		compressionValues = compression.compressPixelData(compressionValues);
 
