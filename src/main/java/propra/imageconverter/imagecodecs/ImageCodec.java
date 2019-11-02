@@ -10,6 +10,18 @@ import java.io.OutputStream;
  *
  */
 public interface ImageCodec {
+	public static final String PROPERTY_COMPRESSION = "compression";
+
+	/**
+	 * Setzt eine Eigenschaft. Es ist nicht garantiert, dass dies vom Codec
+	 * unterstützt wird.
+	 *
+	 * @param name
+	 * @param value
+	 */
+	default public void setCodecProperty(final String name, final String value) {
+		System.out.println("Eigenschaft '" + name + "' wird nicht unterstützt.");
+	}
 
 	/**
 	 * Liest ein Bild von einem {@link InputStream}

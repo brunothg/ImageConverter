@@ -86,7 +86,7 @@ public class CliParameters {
 	}
 
 	/**
-	 * Gibt den Wert für dei Kompressionsart
+	 * Gibt den Wert für die Kompressionsart
 	 *
 	 * @return Kompressionsart oder null für default
 	 */

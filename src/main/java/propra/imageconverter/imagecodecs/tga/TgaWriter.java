@@ -25,8 +25,9 @@ import propra.imageconverter.utils.ByteOutputStream;
 public class TgaWriter implements Closeable {
 
 	private final ByteOutputStream out;
+	TgaImageType imageType = TgaImageType.Rgb;
 
-	public TgaWriter(OutputStream out) {
+	public TgaWriter(final OutputStream out) {
 		this.out = new ByteOutputStream(Objects.requireNonNull(out, "out"));
 	}
 
@@ -38,15 +39,14 @@ public class TgaWriter implements Closeable {
 	 * @throws ConversionException Wenn beim Schreiben des Bildes ein Fehler
 	 *                             auftritt
 	 */
-	public void writeImage(InternalImage image) throws ConversionException {
+	public void writeImage(final InternalImage image) throws ConversionException {
 		Objects.requireNonNull(image, "image");
 
 		this.writeImageIdLength(0);
 
 		this.writeColorMapType(TgaColorMapType.None);
 
-		final TgaImageType imageType = TgaImageType.Rgb;
-		this.writeImageType(imageType);
+		this.writeImageType(this.imageType);
 
 		this.writeColorMapStart(0);
 
@@ -68,14 +68,14 @@ public class TgaWriter implements Closeable {
 		imageAttributes.setVerticalOrigin(VerticalOrigin.Top);
 		this.writeImageAttributes(imageAttributes);
 
-		final TgaCompression compression = imageType.createCompressionInstance();
+		final TgaCompression compression = this.imageType.createCompressionInstance();
 		TgaPixelEncodeValues compressionValues = new TgaPixelEncodeValues();
 		compressionValues.dimension = dimension;
 		compressionValues.pixelResolution = pixelResolution;
 		compressionValues.origin = origin;
 		compressionValues.imageAttributes = imageAttributes;
 		compressionValues.uncompressedPixelData = image.getPixelData();
-		compressionValues.compressedPixelData = getPixelDataOutputStream();
+		compressionValues.compressedPixelData = this.getPixelDataOutputStream();
 		compressionValues = compression.compressPixelData(compressionValues);
 
 	}
@@ -85,7 +85,7 @@ public class TgaWriter implements Closeable {
 		return this.out;
 	}
 
-	private void writeImageAttributes(TgaImageAttributes imageAttributes) throws ConversionException {
+	private void writeImageAttributes(final TgaImageAttributes imageAttributes) throws ConversionException {
 		try {
 			this.out.writeUnsignedByte(TgaImageAttributes.toByte(imageAttributes));
 		} catch (final IOException e) {
@@ -93,7 +93,7 @@ public class TgaWriter implements Closeable {
 		}
 	}
 
-	private void writePixelResolution(int pixelResolution) throws ConversionException {
+	private void writePixelResolution(final int pixelResolution) throws ConversionException {
 		try {
 			this.out.writeUnsignedByte(pixelResolution);
 		} catch (final IOException e) {
@@ -101,7 +101,7 @@ public class TgaWriter implements Closeable {
 		}
 	}
 
-	private void writeImageDimension(Dimension dimension) throws ConversionException {
+	private void writeImageDimension(final Dimension dimension) throws ConversionException {
 		this.out.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 		try {
 			this.out.writeOrderedUnsignedShort(dimension.width);
@@ -111,7 +111,7 @@ public class TgaWriter implements Closeable {
 		}
 	}
 
-	private void writeOrigin(Point origin) throws ConversionException {
+	private void writeOrigin(final Point origin) throws ConversionException {
 		this.out.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 		try {
 			this.out.writeOrderedUnsignedShort(origin.x);
@@ -122,7 +122,7 @@ public class TgaWriter implements Closeable {
 		}
 	}
 
-	private void writeColorMapEntrySize(int colorMapEntrySize) throws ConversionException {
+	private void writeColorMapEntrySize(final int colorMapEntrySize) throws ConversionException {
 		try {
 			this.out.writeUnsignedByte(colorMapEntrySize);
 		} catch (final IOException e) {
@@ -131,7 +131,7 @@ public class TgaWriter implements Closeable {
 		}
 	}
 
-	private void writeColorMapSize(int colorMapSize) throws ConversionException {
+	private void writeColorMapSize(final int colorMapSize) throws ConversionException {
 		this.out.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 		try {
 			this.out.writeOrderedUnsignedShort(colorMapSize);
@@ -140,7 +140,7 @@ public class TgaWriter implements Closeable {
 		}
 	}
 
-	private void writeColorMapStart(int colorMapStart) throws ConversionException {
+	private void writeColorMapStart(final int colorMapStart) throws ConversionException {
 		this.out.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 		try {
 			this.out.writeOrderedUnsignedShort(colorMapStart);
@@ -149,7 +149,7 @@ public class TgaWriter implements Closeable {
 		}
 	}
 
-	private void writeImageType(TgaImageType imageType) throws ConversionException {
+	private void writeImageType(final TgaImageType imageType) throws ConversionException {
 		try {
 			this.out.writeUnsignedByte(imageType.getId());
 		} catch (final IOException e) {
@@ -157,7 +157,7 @@ public class TgaWriter implements Closeable {
 		}
 	}
 
-	private void writeColorMapType(TgaColorMapType colorMapType) throws ConversionException {
+	private void writeColorMapType(final TgaColorMapType colorMapType) throws ConversionException {
 		try {
 			this.out.writeUnsignedByte(colorMapType.getId());
 		} catch (final IOException e) {
@@ -165,12 +165,17 @@ public class TgaWriter implements Closeable {
 		}
 	}
 
-	private void writeImageIdLength(int imageIdLength) throws ConversionException {
+	private void writeImageIdLength(final int imageIdLength) throws ConversionException {
 		try {
 			this.out.writeUnsignedByte(imageIdLength);
 		} catch (final IOException e) {
 			throw new ConversionException("BildId-Länge konnte nicht geschrieben werden: " + e.getMessage(), e);
 		}
+	}
+
+	public void setImageType(final TgaImageType imageType) {
+		Objects.requireNonNull(imageType, "Bildtyp muss angegeben werden");
+		this.imageType = imageType;
 	}
 
 	@Override

@@ -22,8 +22,10 @@ public class TgaCodec implements ImageCodec {
 
 	public static final String FILE_EXTENSION = "tga";
 
+	private TgaImageType imageType = TgaImageType.Rgb;
+
 	@Override
-	public InternalImage readImage(InputStream in) throws ConversionException {
+	public InternalImage readImage(final InputStream in) throws ConversionException {
 		final TgaReader reader = new TgaReader(in);
 		final InternalImage image = reader.readImage();
 		try {
@@ -35,8 +37,9 @@ public class TgaCodec implements ImageCodec {
 	}
 
 	@Override
-	public void writeImage(InternalImage image, OutputStream out) throws ConversionException {
+	public void writeImage(final InternalImage image, final OutputStream out) throws ConversionException {
 		final TgaWriter writer = new TgaWriter(out);
+		writer.setImageType(this.imageType);
 		writer.writeImage(image);
 		try {
 			writer.close();
@@ -48,6 +51,19 @@ public class TgaCodec implements ImageCodec {
 	@Override
 	public String getFileExtension() {
 		return FILE_EXTENSION;
+	}
+
+	@Override
+	public void setCodecProperty(final String name, final String value) {
+		switch (name) {
+		case ImageCodec.PROPERTY_COMPRESSION:
+			this.imageType = TgaImageType.fromCliId(value);
+			break;
+
+		default:
+			System.out.println("Eigenschaft '" + name + "' wird nicht unterstützt.");
+			break;
+		}
 	}
 
 }

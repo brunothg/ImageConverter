@@ -27,8 +27,10 @@ public class PropraCodec implements ImageCodec {
 
 	private static final String FILE_EXTENSION = "propra";
 
+	private PropraCompressionType compressionType = PropraCompressionType.None;
+
 	@Override
-	public InternalImage readImage(InputStream in) throws ConversionException {
+	public InternalImage readImage(final InputStream in) throws ConversionException {
 		final PropraReader reader = new PropraReader(in);
 		final InternalImage image = reader.readImage();
 		try {
@@ -40,8 +42,9 @@ public class PropraCodec implements ImageCodec {
 	}
 
 	@Override
-	public void writeImage(InternalImage image, OutputStream out) throws ConversionException {
+	public void writeImage(final InternalImage image, final OutputStream out) throws ConversionException {
 		final PropraWriter writer = new PropraWriter(out);
+		writer.setCompressionType(this.compressionType);
 		writer.writeImage(image);
 		try {
 			writer.close();
@@ -53,6 +56,19 @@ public class PropraCodec implements ImageCodec {
 	@Override
 	public String getFileExtension() {
 		return FILE_EXTENSION;
+	}
+
+	@Override
+	public void setCodecProperty(final String name, final String value) {
+		switch (name) {
+		case ImageCodec.PROPERTY_COMPRESSION:
+			this.compressionType = PropraCompressionType.fromCliId(value);
+			break;
+
+		default:
+			System.out.println("Eigenschaft '" + name + "' wird nicht unterstützt.");
+			break;
+		}
 	}
 
 }
