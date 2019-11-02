@@ -1,4 +1,4 @@
-package propra.imageconverter.imagecodecs.tga;
+package propra.imageconverter.imagecodecs.tga.compression;
 
 import java.awt.Color;
 import java.awt.Point;

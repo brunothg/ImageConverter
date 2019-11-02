@@ -1,4 +1,4 @@
-package propra.imageconverter.imagecodecs.propra;
+package propra.imageconverter.imagecodecs.propra.compression;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -17,7 +17,7 @@ import propra.imageconverter.imagecodecs.ConversionException;
  * @author marvin
  *
  */
-public class PropraNoCompression extends PropraCompression {
+public class PropraRleCompression extends PropraCompression {
 
 	@Override
 	public PropraPixelDecodeValues uncompressPixelData(PropraPixelDecodeValues values) throws ConversionException {

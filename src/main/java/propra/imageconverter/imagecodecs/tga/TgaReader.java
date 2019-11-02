@@ -14,7 +14,8 @@ import java.util.Objects;
 
 import propra.imageconverter.imagecodecs.ConversionException;
 import propra.imageconverter.imagecodecs.InternalImage;
-import propra.imageconverter.imagecodecs.tga.TgaCompression.TgaPixelDecodeValues;
+import propra.imageconverter.imagecodecs.tga.compression.TgaCompression;
+import propra.imageconverter.imagecodecs.tga.compression.TgaCompression.TgaPixelDecodeValues;
 import propra.imageconverter.utils.ByteInputStream;
 import propra.imageconverter.utils.LimitInputStream;;
 

@@ -1,4 +1,4 @@
-package propra.imageconverter.imagecodecs.tga;
+package propra.imageconverter.imagecodecs.tga.compression;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import propra.imageconverter.imagecodecs.ConversionException;
+import propra.imageconverter.imagecodecs.tga.TgaImageAttributes;
 
 /**
  * Interface für verschiedene Kompressionsverfahren

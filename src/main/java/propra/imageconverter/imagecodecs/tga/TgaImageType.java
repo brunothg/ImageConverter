@@ -2,6 +2,9 @@ package propra.imageconverter.imagecodecs.tga;
 
 import java.lang.reflect.InvocationTargetException;
 
+import propra.imageconverter.imagecodecs.tga.compression.TgaCompression;
+import propra.imageconverter.imagecodecs.tga.compression.TgaRgbCompression;
+
 /**
  * Tga-Bildtyp
  *

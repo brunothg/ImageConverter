@@ -2,6 +2,10 @@ package propra.imageconverter.imagecodecs.propra;
 
 import java.lang.reflect.InvocationTargetException;
 
+import propra.imageconverter.imagecodecs.propra.compression.PropraCompression;
+import propra.imageconverter.imagecodecs.propra.compression.PropraNoCompression;
+import propra.imageconverter.imagecodecs.propra.compression.PropraRleCompression;
+
 /**
  * Kompressionstyp eines ProPra Bildes
  *
@@ -9,7 +13,7 @@ import java.lang.reflect.InvocationTargetException;
  *
  */
 public enum PropraCompressionType {
-	None(0, PropraNoCompression.class);
+	None(0, PropraNoCompression.class), Rle(1, PropraRleCompression.class);
 
 	/**
 	 * Id des Kompressionstyps nach der Spezifikation
@@ -18,7 +22,7 @@ public enum PropraCompressionType {
 
 	private Class<? extends PropraCompression> compressionClass;
 
-	private PropraCompressionType(int id, Class<? extends PropraCompression> compressionClass) {
+	private PropraCompressionType(final int id, final Class<? extends PropraCompression> compressionClass) {
 		this.id = id;
 		this.compressionClass = compressionClass;
 	}
@@ -42,11 +46,11 @@ public enum PropraCompressionType {
 
 	/**
 	 * Gibt den Kompressionstyp zu einer Id
-	 * 
+	 *
 	 * @param id Kompressions Id
 	 * @return {@link PropraCompressionType} oder null, wenn nicht vorhanden
 	 */
-	public static PropraCompressionType fromId(int id) {
+	public static PropraCompressionType fromId(final int id) {
 		for (final PropraCompressionType type : PropraCompressionType.values()) {
 			if (type.getId() == id) {
 				return type;

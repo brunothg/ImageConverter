@@ -13,7 +13,8 @@ import java.util.Objects;
 import propra.imageconverter.imagecodecs.ConversionException;
 import propra.imageconverter.imagecodecs.InternalImage;
 import propra.imageconverter.imagecodecs.propra.PropraChecksum.PropraChecksumInputStream;
-import propra.imageconverter.imagecodecs.propra.PropraCompression.PropraPixelDecodeValues;
+import propra.imageconverter.imagecodecs.propra.compression.PropraCompression;
+import propra.imageconverter.imagecodecs.propra.compression.PropraCompression.PropraPixelDecodeValues;
 import propra.imageconverter.utils.ByteInputStream;
 import propra.imageconverter.utils.LimitInputStream;
 

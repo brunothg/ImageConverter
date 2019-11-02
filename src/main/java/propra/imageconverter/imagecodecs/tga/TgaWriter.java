@@ -10,9 +10,10 @@ import java.util.Objects;
 
 import propra.imageconverter.imagecodecs.ConversionException;
 import propra.imageconverter.imagecodecs.InternalImage;
-import propra.imageconverter.imagecodecs.tga.TgaCompression.TgaPixelEncodeValues;
 import propra.imageconverter.imagecodecs.tga.TgaImageAttributes.HorizontalOrigin;
 import propra.imageconverter.imagecodecs.tga.TgaImageAttributes.VerticalOrigin;
+import propra.imageconverter.imagecodecs.tga.compression.TgaCompression;
+import propra.imageconverter.imagecodecs.tga.compression.TgaCompression.TgaPixelEncodeValues;
 import propra.imageconverter.utils.ByteOutputStream;
 
 /**

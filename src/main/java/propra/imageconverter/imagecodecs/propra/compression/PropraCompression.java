@@ -1,4 +1,4 @@
-package propra.imageconverter.imagecodecs.propra;
+package propra.imageconverter.imagecodecs.propra.compression;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
