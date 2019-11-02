@@ -65,6 +65,28 @@ public class InternalFileImage implements InternalImage {
 	}
 
 	@Override
+	public void setPixels(final Point p, final Color... cs) {
+		if (!this.isValidPoint(p)) {
+			throw new RuntimeException("Illegale Koordinate: " + p);
+		}
+
+		try {
+			this.gotoPosition(p);
+
+			final byte[] bytes = new byte[cs.length * 3];
+			for (int i = 0; i < cs.length; i++) {
+				bytes[(i * 3) + 0] = (byte) cs[i].getRed();
+				bytes[(i * 3) + 1] = (byte) cs[i].getGreen();
+				bytes[(i * 3) + 2] = (byte) cs[i].getBlue();
+			}
+
+			this.raFile.write(bytes);
+		} catch (final IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
 	public Color getPixel(final Point p) {
 		if (!this.isValidPoint(p)) {
 			throw new RuntimeException("Illegale Koordinate: " + p);
@@ -84,6 +106,33 @@ public class InternalFileImage implements InternalImage {
 		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public Color[] getPixels(final Point p, final int count) {
+		if (!this.isValidPoint(p)) {
+			throw new RuntimeException("Illegale Koordinate: " + p);
+		}
+
+		try {
+			this.gotoPosition(p);
+			final Color[] colors = new Color[count];
+
+			final byte[] colorBytes = new byte[count * 3];
+			this.raFile.readFully(colorBytes);
+
+			for (int i = 0; i < colors.length; i++) {
+				final int r = Byte.toUnsignedInt(colorBytes[(i * 3) + 0]);
+				final int g = Byte.toUnsignedInt(colorBytes[(i * 3) + 1]);
+				final int b = Byte.toUnsignedInt(colorBytes[(i * 3) + 2]);
+				colors[i] = new Color(r, g, b);
+			}
+
+			return colors;
+		} catch (final IOException e) {
+			throw new RuntimeException(e);
+		}
+
 	}
 
 	private void gotoPosition(final Point p) throws IOException {

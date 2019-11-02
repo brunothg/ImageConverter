@@ -30,18 +30,6 @@ public interface InternalImage {
 	public void setPixel(final Point p, final Color c);
 
 	/**
-	 * Setzt eine ganze Pixelreihe auf einmal
-	 *
-	 * @param y  Y-Koordinate
-	 * @param cs Farben
-	 */
-	default public void setPixelRow(final int y, final Color... cs) {
-		for (int x = 0; x < cs.length; x++) {
-			this.setPixel(new Point(x, y), cs[x]);
-		}
-	}
-
-	/**
 	 * Setzt mehrere Pixel ausgehend von einem Punkt (von links nach rechts; von
 	 * oben nach unten)
 	 *
@@ -75,22 +63,6 @@ public interface InternalImage {
 	 * @return Die Fareb des Pixels
 	 */
 	public Color getPixel(final Point p);
-
-	/**
-	 * Gibt eine Pixelreihe
-	 *
-	 * @param y Y-Koordinate
-	 * @return Farben der Pixelreihe
-	 */
-	default public Color[] getPixelRow(final int y) {
-		final Color[] colors = new Color[this.getSize().width];
-
-		for (int x = 0; x < colors.length; x++) {
-			colors[x] = this.getPixel(new Point(x, y));
-		}
-
-		return colors;
-	}
 
 	/**
 	 * Gibt mehrere Pixel ausgehend von einem Punkt (von links nach rechts; von oben
