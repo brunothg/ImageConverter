@@ -10,6 +10,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
+/**
+ *
+ * @author marvin
+ *
+ */
 public class InternalFileImage implements InternalImage {
 
 	private final Dimension size;
@@ -65,7 +70,10 @@ public class InternalFileImage implements InternalImage {
 	}
 
 	@Override
-	public void setPixels(final Point p, final Color... cs) {
+	public void setPixels(final Point p, final Color[] cs, final int start, final int anz) {
+		if ((start < 0) || (anz > cs.length)) {
+			throw new RuntimeException("start '" + start + "' und anz '" + anz + "' passen nicht zum array");
+		}
 		if (!this.isValidPoint(p)) {
 			throw new RuntimeException("Illegale Koordinate: " + p);
 		}
@@ -73,8 +81,8 @@ public class InternalFileImage implements InternalImage {
 		try {
 			this.gotoPosition(p);
 
-			final byte[] bytes = new byte[cs.length * 3];
-			for (int i = 0; i < cs.length; i++) {
+			final byte[] bytes = new byte[anz * 3];
+			for (int i = start; (i < cs.length) && (i < (start + anz)); i++) {
 				bytes[(i * 3) + 0] = (byte) cs[i].getRed();
 				bytes[(i * 3) + 1] = (byte) cs[i].getGreen();
 				bytes[(i * 3) + 2] = (byte) cs[i].getBlue();

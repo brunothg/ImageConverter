@@ -36,11 +36,15 @@ public interface InternalImage {
 	 * @param p  Startpunkt
 	 * @param cs Farben
 	 */
-	default public void setPixels(final Point p, final Color... cs) {
+	default public void setPixels(final Point p, final Color[] cs, final int start, final int anz) {
+		if ((start < 0) || (anz > cs.length)) {
+			throw new RuntimeException("start '" + start + "' und anz '" + anz + "' passen nicht zum array");
+		}
+
 		int x = p.x;
 		int y = p.y;
 
-		for (int i = 0; i < cs.length; i++) {
+		for (int i = start; (i < cs.length) && (i < (start + anz)); i++) {
 			this.setPixel(new Point(x, y), cs[i]);
 
 			x++;
