@@ -1,6 +1,8 @@
 package propra.imageconverter.imagecodecs;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 /**
@@ -9,53 +11,36 @@ import java.awt.image.BufferedImage;
  * @author marvin
  *
  */
-public class InternalImage {
-
-	/**
-	 * Interne Pixeldatendarstellung
-	 */
-	private BufferedImage pixelData;
-
-	public InternalImage() {
-	}
-
-	public InternalImage(final BufferedImage pixelData) {
-		this();
-
-		this.setPixelData(pixelData);
-	}
+public interface InternalImage {
 
 	/**
 	 * Gibt die Pixeldaten als BufferedImage. Kann null sein.
 	 *
 	 * @return Die Pixeldaten oder null, wenn nicht vorhanden
 	 */
-	public BufferedImage getPixelData() {
-		return this.pixelData;
-	}
+	public BufferedImage getPixelData();
 
 	/**
-	 * Setzt die Pixeldaten
+	 * Setzt einen Pixel
 	 *
-	 * @param pixelData Die neuen Pixeldaten
+	 * @param p Koordinaten
+	 * @param c Farbe
 	 */
-	public void setPixelData(final BufferedImage pixelData) {
-		this.pixelData = pixelData;
-	}
+	public void setPixel(final Point p, final Color c);
 
 	/**
-	 * Gibt die Maße des Bildes. Kann null sein.
+	 * Gibt die Farbe enes Pixels
 	 *
-	 * @return Die Dimension des Bilder oder null, wenn keine Bilddaten vorhanden
-	 *         sind
+	 * @param p Koordinaten
+	 * @return Die Fareb des Pixels
 	 */
-	public Dimension getSize() {
-		final BufferedImage data = this.getPixelData();
-		if (data == null) {
-			return null;
-		}
+	public Color getPixel(final Point p);
 
-		return new Dimension(data.getWidth(), data.getHeight());
-	}
+	/**
+	 * Gibt die Maße des Bildes.
+	 *
+	 * @return Die Dimension des Bildes
+	 */
+	public Dimension getSize();
 
 }

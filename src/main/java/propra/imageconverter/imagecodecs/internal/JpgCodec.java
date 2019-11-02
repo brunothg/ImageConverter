@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 import propra.imageconverter.imagecodecs.ConversionException;
 import propra.imageconverter.imagecodecs.ImageCodec;
 import propra.imageconverter.imagecodecs.InternalImage;
+import propra.imageconverter.imagecodecs.InternalMemoryImage;
 
 /**
  * Codec für JPGs
@@ -22,7 +23,7 @@ public class JpgCodec implements ImageCodec {
 	@Override
 	public InternalImage readImage(final InputStream in) throws ConversionException {
 		try {
-			return new InternalImage(ImageIO.read(in));
+			return new InternalMemoryImage(ImageIO.read(in));
 		} catch (final Exception e) {
 			throw new ConversionException("Fehler beim Lesen des Bildes: " + e.getMessage(), e);
 		}
