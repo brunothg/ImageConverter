@@ -3,8 +3,6 @@ package propra.imageconverter.imagecodecs.tga.compression;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,20 +24,20 @@ public class TgaRleCompression extends TgaCompression {
 		final BufferedImage image = new BufferedImage(values.dimension.width, values.dimension.height,
 				BufferedImage.TYPE_INT_RGB);
 
-		final InputStream in = new BufferedInputStream(values.compressedPixelData, 1024);
+		final InputStream in = values.compressedPixelData;
 
 		final PixelLoop pixelLoop = new PixelLoop(values);
 		Point pixelPosition = pixelLoop.init();
 		while (pixelPosition != null) {
 
 			try {
-				final int steuerbit = in.read();
-				if (steuerbit < 0) {
+				final int steuerbyte = in.read();
+				if (steuerbyte < 0) {
 					throw new ConversionException(
 							"Steuerbit konnte nicht gelesen werden: " + pixelPosition + " : Fehlende Daten");
 				}
-				final boolean rleRepeat = (steuerbit & 0b10000000) == 0b10000000;
-				final int rleCounter = ((steuerbit & 0b01111111)) + 1;
+				final boolean rleRepeat = (steuerbyte & 0b10000000) == 0b10000000;
+				final int rleCounter = ((steuerbyte & 0b01111111)) + 1;
 
 				if (rleRepeat) {
 					final Color pixel = this.readPixel(in);
@@ -64,11 +62,6 @@ public class TgaRleCompression extends TgaCompression {
 			}
 		}
 
-		try {
-			in.close();
-		} catch (final IOException e) {
-		}
-
 		values.uncompressedPixelData = image;
 		return values;
 	}
@@ -89,10 +82,29 @@ public class TgaRleCompression extends TgaCompression {
 
 	@Override
 	public TgaPixelEncodeValues compressPixelData(final TgaPixelEncodeValues values) throws ConversionException {
-		final OutputStream out = new BufferedOutputStream(values.compressedPixelData, 1024);
+		final OutputStream out = values.compressedPixelData;
 
-		// TODO RLE compressPixelData
-		throw new ConversionException("Not implemented");
+		// TODO Kompression verbessern
+		final PixelLoop pixelLoop = new PixelLoop(values);
+		Point pixelPosition = pixelLoop.init();
+		while (pixelPosition != null) {
+			final int rgb = values.uncompressedPixelData.getRGB(pixelPosition.x, pixelPosition.y);
+			final Color color = new Color(rgb);
+			try {
+				final boolean rleRepeat = false;
+				final int rleCounter = 1;
+				final int steuerbyte = ((rleCounter - 1) & 0b01111111) + ((rleRepeat) ? 0b10000000 : 0b00000000);
+
+				out.write(steuerbyte);
+				out.write(new byte[] { (byte) color.getBlue(), (byte) color.getGreen(), (byte) color.getRed() });
+			} catch (final IOException e) {
+				throw new ConversionException("Pixeldaten können nicht geschrieben werden: " + e.getMessage(), e);
+			}
+
+			pixelPosition = pixelLoop.increment();
+		}
+
+		return values;
 	}
 
 	/**

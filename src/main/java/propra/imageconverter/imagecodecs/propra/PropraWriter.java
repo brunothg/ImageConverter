@@ -58,6 +58,7 @@ public class PropraWriter implements Closeable {
 
 		this.writeCompressionType(this.compressionType);
 
+		// TODO Berechnung bei Kompremierung falsch
 		final BigInteger pixelDataSize = BigInteger.valueOf((pixelResolution / 8) * dimension.height * dimension.width);
 		this.writePixelDataSize(pixelDataSize);
 
@@ -198,6 +199,10 @@ public class PropraWriter implements Closeable {
 
 	@Override
 	public void close() throws IOException {
+		try {
+			this.out.flush();
+		} catch (final IOException e) {
+		}
 		this.out.close();
 	}
 }

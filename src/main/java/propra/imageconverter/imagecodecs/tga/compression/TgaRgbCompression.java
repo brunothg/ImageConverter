@@ -3,8 +3,6 @@ package propra.imageconverter.imagecodecs.tga.compression;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,11 +21,11 @@ import propra.imageconverter.imagecodecs.tga.TgaImageAttributes.VerticalOrigin;
 public class TgaRgbCompression extends TgaCompression {
 
 	@Override
-	public TgaPixelDecodeValues uncompressPixelData(TgaPixelDecodeValues values) throws ConversionException {
+	public TgaPixelDecodeValues uncompressPixelData(final TgaPixelDecodeValues values) throws ConversionException {
 		final BufferedImage image = new BufferedImage(values.dimension.width, values.dimension.height,
 				BufferedImage.TYPE_INT_RGB);
 
-		final InputStream in = new BufferedInputStream(values.compressedPixelData, 1024);
+		final InputStream in = values.compressedPixelData;
 
 		this.pixelLoop(values, (point) -> {
 			try {
@@ -49,18 +47,13 @@ public class TgaRgbCompression extends TgaCompression {
 			return null;
 		});
 
-		try {
-			in.close();
-		} catch (final IOException e) {
-		}
-
 		values.uncompressedPixelData = image;
 		return values;
 	}
 
 	@Override
-	public TgaPixelEncodeValues compressPixelData(TgaPixelEncodeValues values) throws ConversionException {
-		final OutputStream out = new BufferedOutputStream(values.compressedPixelData, 1024);
+	public TgaPixelEncodeValues compressPixelData(final TgaPixelEncodeValues values) throws ConversionException {
+		final OutputStream out = values.compressedPixelData;
 		this.pixelLoop(values, (point) -> {
 			final int rgb = values.uncompressedPixelData.getRGB(point.x, point.y);
 			final Color color = new Color(rgb);
@@ -74,11 +67,6 @@ public class TgaRgbCompression extends TgaCompression {
 			return null;
 		});
 
-		try {
-			out.close();
-		} catch (final IOException e) {
-		}
-
 		return values;
 	}
 
@@ -89,7 +77,8 @@ public class TgaRgbCompression extends TgaCompression {
 	 * @param f      Funktion, die pro Pixel aufgerufen wird
 	 * @throws ConversionException
 	 */
-	private void pixelLoop(TgaPixelCompressionValues values, Function<Point, Exception> f) throws ConversionException {
+	private void pixelLoop(final TgaPixelCompressionValues values, final Function<Point, Exception> f)
+			throws ConversionException {
 		final Exception e = this.verticalPixelLoop(values, (y) -> {
 			final Exception eV = this.horizontalPixelLoop(values, (x) -> {
 				final Exception eH = f.apply(new Point(x, y));
@@ -107,7 +96,7 @@ public class TgaRgbCompression extends TgaCompression {
 		}
 	}
 
-	private Exception verticalPixelLoop(TgaPixelCompressionValues values, Function<Integer, Exception> f) {
+	private Exception verticalPixelLoop(final TgaPixelCompressionValues values, final Function<Integer, Exception> f) {
 		final VerticalOrigin verticalOrigin = values.imageAttributes.getVerticalOrigin();
 		switch (verticalOrigin) {
 		case Bottom:
@@ -134,7 +123,8 @@ public class TgaRgbCompression extends TgaCompression {
 		return null;
 	}
 
-	private Exception horizontalPixelLoop(TgaPixelCompressionValues values, Function<Integer, Exception> f) {
+	private Exception horizontalPixelLoop(final TgaPixelCompressionValues values,
+			final Function<Integer, Exception> f) {
 		final HorizontalOrigin horizontalOrigin = values.imageAttributes.getHorizontalOrigin();
 		switch (horizontalOrigin) {
 		case Left:

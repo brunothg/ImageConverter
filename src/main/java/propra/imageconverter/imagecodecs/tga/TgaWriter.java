@@ -2,6 +2,7 @@ package propra.imageconverter.imagecodecs.tga;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -28,7 +29,7 @@ public class TgaWriter implements Closeable {
 	TgaImageType imageType = TgaImageType.Rgb;
 
 	public TgaWriter(final OutputStream out) {
-		this.out = new ByteOutputStream(Objects.requireNonNull(out, "out"));
+		this.out = new ByteOutputStream(new BufferedOutputStream(Objects.requireNonNull(out, "out"), 1024));
 	}
 
 	/**

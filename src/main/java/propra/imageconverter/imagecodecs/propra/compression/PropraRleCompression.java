@@ -101,19 +101,23 @@ public class PropraRleCompression extends PropraCompression {
 
 		final OutputStream out = new BufferedOutputStream(values.compressedPixelData, 1024);
 
+		// TODO Kompression verbessern
 		for (int y = 0; y < values.dimension.height; y++) {
 			for (int x = 0; x < values.dimension.width; x++) {
 
 				final int rgb = values.uncompressedPixelData.getRGB(x, y);
 				final Color color = new Color(rgb);
 
-				// TODO RLE compressPixelData
-				throw new ConversionException("Not implemented");
-//				try {
-//					out.write(new byte[] { (byte) color.getGreen(), (byte) color.getBlue(), (byte) color.getRed() });
-//				} catch (final IOException e) {
-//					throw new ConversionException("Pixeldaten können nicht geschrieben werden: " + e.getMessage(), e);
-//				}
+				try {
+					final boolean rleRepeat = false;
+					final int rleCounter = 1;
+					final int steuerbyte = ((rleCounter - 1) & 0b01111111) + ((rleRepeat) ? 0b10000000 : 0b00000000);
+
+					out.write(steuerbyte);
+					out.write(new byte[] { (byte) color.getGreen(), (byte) color.getBlue(), (byte) color.getRed() });
+				} catch (final IOException e) {
+					throw new ConversionException("Pixeldaten können nicht geschrieben werden: " + e.getMessage(), e);
+				}
 			}
 		}
 		try {

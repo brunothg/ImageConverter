@@ -2,6 +2,7 @@ package propra.imageconverter.imagecodecs.tga;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,8 +17,7 @@ import propra.imageconverter.imagecodecs.ConversionException;
 import propra.imageconverter.imagecodecs.InternalImage;
 import propra.imageconverter.imagecodecs.tga.compression.TgaCompression;
 import propra.imageconverter.imagecodecs.tga.compression.TgaCompression.TgaPixelDecodeValues;
-import propra.imageconverter.utils.ByteInputStream;
-import propra.imageconverter.utils.LimitInputStream;;
+import propra.imageconverter.utils.ByteInputStream;;
 
 /**
  * Klasse zum Lesen von Tga-Bildern
@@ -29,8 +29,8 @@ public class TgaReader implements Closeable {
 
 	private final ByteInputStream in;
 
-	public TgaReader(InputStream in) {
-		this.in = new ByteInputStream(Objects.requireNonNull(in, "in"));
+	public TgaReader(final InputStream in) {
+		this.in = new ByteInputStream(new BufferedInputStream(Objects.requireNonNull(in, "in"), 1024));
 	}
 
 	/**
@@ -91,7 +91,7 @@ public class TgaReader implements Closeable {
 		compressionValues.pixelResolution = pixelResolution;
 		compressionValues.origin = origin;
 		compressionValues.imageAttributes = imageAttributes;
-		compressionValues.compressedPixelData = getPixelDataInputStream(pixelDataSize);
+		compressionValues.compressedPixelData = this.getPixelDataInputStream(pixelDataSize);
 		compressionValues = compression.uncompressPixelData(compressionValues);
 
 		final InternalImage internalImage = new InternalImage();
@@ -99,12 +99,12 @@ public class TgaReader implements Closeable {
 		return internalImage;
 	}
 
-	private LimitInputStream getPixelDataInputStream(final BigInteger pixelDataSize) {
+	private InputStream getPixelDataInputStream(final BigInteger pixelDataSize) {
 		this.in.setByteOrder(ByteOrder.BIG_ENDIAN);
-		return new LimitInputStream(this.in, pixelDataSize);
+		return this.in;
 	}
 
-	private void readImageId(int imageIdLength) throws ConversionException {
+	private void readImageId(final int imageIdLength) throws ConversionException {
 		this.in.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 		try {
 			final byte[] imageId = this.in.readOrderedBytes(imageIdLength);

@@ -26,7 +26,7 @@ public class ByteOutputStream extends FilterOutputStream implements Closeable {
 	 *
 	 * @param out {@link OutputStream} aus dem gelesen wird
 	 */
-	public ByteOutputStream(OutputStream out) {
+	public ByteOutputStream(final OutputStream out) {
 		super(out);
 		Objects.requireNonNull(out, "out");
 		this.setByteOrder(ByteOrder.nativeOrder());
@@ -39,7 +39,7 @@ public class ByteOutputStream extends FilterOutputStream implements Closeable {
 	 * @param out       {@link OutputStream} aus dem gelesen wird
 	 * @param byteOrder Initiale {@link ByteOrder}
 	 */
-	public ByteOutputStream(OutputStream out, ByteOrder byteOrder) {
+	public ByteOutputStream(final OutputStream out, final ByteOrder byteOrder) {
 		this(out);
 		this.setByteOrder(byteOrder);
 	}
@@ -52,7 +52,7 @@ public class ByteOutputStream extends FilterOutputStream implements Closeable {
 	 * @param length  Anzahl der Bytes, die geschrieben werden
 	 * @throws IOException
 	 */
-	public void writeOrderedString(String string, Charset charset, int length) throws IOException {
+	public void writeOrderedString(final String string, final Charset charset, final int length) throws IOException {
 		this.writeOrderedBytes(Arrays.copyOf(string.getBytes(charset), length));
 	}
 
@@ -63,7 +63,7 @@ public class ByteOutputStream extends FilterOutputStream implements Closeable {
 	 * @param unsignedShort Vorzeichenlose 16Bit (2byte) Zahl
 	 * @throws IOException
 	 */
-	public void writeOrderedUnsignedShort(int unsignedShort) throws IOException {
+	public void writeOrderedUnsignedShort(final int unsignedShort) throws IOException {
 		final byte[] unsignedShortBytes = { (byte) (unsignedShort >> 8), (byte) unsignedShort }; // Nur die unteren 2
 		this.writeOrderedBytes(unsignedShortBytes);
 	}
@@ -75,7 +75,7 @@ public class ByteOutputStream extends FilterOutputStream implements Closeable {
 	 * @param unsignedInt Vorzeichenlose 32Bit (4byte) Zahl
 	 * @throws IOException
 	 */
-	public void writeOrderedUnsignedInt(long unsignedInt) throws IOException {
+	public void writeOrderedUnsignedInt(final long unsignedInt) throws IOException {
 		final byte[] unsignedIntBytes = { (byte) (unsignedInt >> 24), (byte) (unsignedInt >> 16),
 				(byte) (unsignedInt >> 8), (byte) unsignedInt }; // Nur die unteren 4
 		this.writeOrderedBytes(unsignedIntBytes);
@@ -86,7 +86,7 @@ public class ByteOutputStream extends FilterOutputStream implements Closeable {
 	 *
 	 * @throws IOException
 	 */
-	public void writeUnsignedByte(int unsignedByte) throws IOException {
+	public void writeUnsignedByte(final int unsignedByte) throws IOException {
 		this.out.write(unsignedByte);
 	}
 
@@ -98,7 +98,7 @@ public class ByteOutputStream extends FilterOutputStream implements Closeable {
 	 * @return Anzahl Bytes, die geschrieben wurden
 	 * @throws IOException
 	 */
-	public int writeOrderedUnsignedNumber(BigInteger number, Integer length) throws IOException {
+	public int writeOrderedUnsignedNumber(final BigInteger number, final Integer length) throws IOException {
 		byte[] unsignedNumberBytes = number.toByteArray();
 		number.clearBit(0);
 		final int bytesWithoutSignBits = (int) Math.ceil(number.bitLength() / 8.0);
@@ -128,7 +128,7 @@ public class ByteOutputStream extends FilterOutputStream implements Closeable {
 	 * @param bytes Die Bytes zum Schreiben
 	 * @throws IOException
 	 */
-	public void writeOrderedBytes(byte[] bytes) throws IOException {
+	public void writeOrderedBytes(final byte[] bytes) throws IOException {
 		final byte[] bytesToWrite = Arrays.copyOf(bytes, bytes.length);
 
 		if (this.getByteOrder() == ByteOrder.LITTLE_ENDIAN) {
@@ -143,7 +143,7 @@ public class ByteOutputStream extends FilterOutputStream implements Closeable {
 	 *
 	 * @param bytes Byte-Array, das umgedreht werden soll
 	 */
-	protected static void reverse(byte[] bytes) {
+	protected static void reverse(final byte[] bytes) {
 		final int length = bytes.length;
 
 		for (int i = 0; i < (length / 2); i++) {
@@ -163,7 +163,7 @@ public class ByteOutputStream extends FilterOutputStream implements Closeable {
 	/**
 	 * @param byteOrder the byteOrder to set
 	 */
-	public void setByteOrder(ByteOrder byteOrder) {
+	public void setByteOrder(final ByteOrder byteOrder) {
 		this.byteOrder = byteOrder;
 	}
 
