@@ -1,7 +1,13 @@
 package propra.imageconverter;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
+import propra.imageconverter.basen.BaseNInputStream;
+import propra.imageconverter.basen.BaseNOutputStream;
 import propra.imageconverter.imagecodecs.ConversionException;
 import propra.imageconverter.imagecodecs.ImageCodec;
 import propra.imageconverter.imagecodecs.InternalImage;
@@ -24,6 +30,8 @@ public class ImageConverter {
 			new PngCodec(), new JpgCodec() };
 
 	private static final char[] BASE32_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUV".toCharArray();
+	private static final String BASE32_EXTENSION = ".base-32";
+	private static final String BASEN_EXTENSION = ".base-n";
 
 	/**
 	 * Programm-Einsteigspunkt
@@ -51,24 +59,82 @@ public class ImageConverter {
 		parameters.parse(args);
 
 		if (parameters.isBase32Encode()) {
-			// TODO isBase32Encode
+			encodeBaseN(parameters, BASE32_ALPHABET, BASE32_EXTENSION);
 		} else if (parameters.isBase32Decode()) {
-			// TODO isBase32Decode
+			decodeBaseN(parameters, BASE32_ALPHABET, BASE32_EXTENSION);
 		} else if (parameters.isBaseNDecode()) {
-			// TODO isBaseNDecode
+			decodeBaseN(parameters, null, BASEN_EXTENSION);
 		} else if (parameters.isBaseNEncode()) {
-			// TODO isBaseNEncode
+			encodeBaseN(parameters, parameters.getBaseNEncodeAlphabet(), BASEN_EXTENSION);
 		} else /* Bildkonvertierung */ {
-
-			final ImageCodec inputCodec = getCodec(parameters.getInputFileExtension());
-			final ImageCodec outputCodec = getCodec(parameters.getOutputFileExtension());
-			setOutputProperties(parameters, outputCodec);
-
-			final InternalImage image = inputCodec.readImage(Files.newInputStream(parameters.getInputFile()));
-			outputCodec.writeImage(image, Files.newOutputStream(parameters.getOutputFile()));
-			image.close();
+			convertImage(parameters);
 		}
 
+	}
+
+	private static void decodeBaseN(final CliParameters parameters, final char[] alphabet, final String extension)
+			throws IOException {
+		final Path inputFile = parameters.getInputFile();
+		if ((inputFile == null)) {
+			throw new ParameterException("Input-File wurde nicht angegeben");
+		}
+		final String inputFileName = inputFile.getFileName().toString();
+		if (!inputFileName.endsWith(extension)) {
+			throw new ParameterException("Input-File ist nicht vom richtigen typ");
+		}
+
+		final Path outputFile = inputFile.getParent()
+				.resolve(inputFileName.substring(0, inputFileName.length() - extension.length()));
+
+		final BaseNInputStream baseNInputStream = new BaseNInputStream(
+				new BufferedInputStream(Files.newInputStream(inputFile), 1024), alphabet);
+		final BufferedOutputStream out = new BufferedOutputStream(Files.newOutputStream(outputFile), 1024);
+
+		int read;
+		while ((read = baseNInputStream.read()) >= 0) {
+			out.write(read);
+		}
+
+		try {
+			baseNInputStream.close();
+			out.close();
+		} catch (final IOException e) {
+		}
+	}
+
+	private static void encodeBaseN(final CliParameters parameters, final char[] alphabet, final String extension)
+			throws IOException {
+		final Path inputFile = parameters.getInputFile();
+		if (inputFile == null) {
+			throw new ParameterException("Input-File wurde nicht angegeben");
+		}
+		final String inputFileName = inputFile.getFileName().toString();
+		final Path outputFile = inputFile.getParent().resolve(inputFileName + "" + extension);
+
+		final BufferedInputStream in = new BufferedInputStream(Files.newInputStream(inputFile), 1024);
+		final BaseNOutputStream baseNOutputStream = new BaseNOutputStream(
+				new BufferedOutputStream(Files.newOutputStream(outputFile), 1024), alphabet);
+
+		int read;
+		while ((read = in.read()) >= 0) {
+			baseNOutputStream.write(read);
+		}
+
+		try {
+			in.close();
+			baseNOutputStream.close();
+		} catch (final IOException e) {
+		}
+	}
+
+	private static void convertImage(final CliParameters parameters) throws ConversionException, IOException {
+		final ImageCodec inputCodec = getCodec(parameters.getInputFileExtension());
+		final ImageCodec outputCodec = getCodec(parameters.getOutputFileExtension());
+		setOutputProperties(parameters, outputCodec);
+
+		final InternalImage image = inputCodec.readImage(Files.newInputStream(parameters.getInputFile()));
+		outputCodec.writeImage(image, Files.newOutputStream(parameters.getOutputFile()));
+		image.close();
 	}
 
 	/**

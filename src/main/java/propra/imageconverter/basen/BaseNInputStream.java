@@ -1,5 +1,6 @@
 package propra.imageconverter.basen;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -8,7 +9,7 @@ import java.io.InputStream;
  * @author marvin
  *
  */
-public class BaseNInputStream {
+public class BaseNInputStream extends InputStream {
 
 	/**
 	 * Das Alphabet wir automatisch ermittelt (erste Zeile des Streams)
@@ -20,5 +21,11 @@ public class BaseNInputStream {
 	}
 
 	public BaseNInputStream(final InputStream in, final char[] alphabet) {
+	}
+
+	@Override
+	public int read() throws IOException {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }
