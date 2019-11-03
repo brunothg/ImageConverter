@@ -52,7 +52,7 @@ public class BaseNInputStream extends InputStream {
 
 	@Override
 	public int read() throws IOException {
-
+		// TODO BaseN-read
 		final char c = (char) this.in.read();
 
 		return -1;

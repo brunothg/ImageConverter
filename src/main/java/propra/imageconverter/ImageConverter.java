@@ -59,13 +59,13 @@ public class ImageConverter {
 		parameters.parse(args);
 
 		if (parameters.isBase32Encode()) {
-			encodeBaseN(parameters, BASE32_ALPHABET, BASE32_EXTENSION);
+			encodeBaseN(parameters, BASE32_ALPHABET, BASE32_EXTENSION, false);
 		} else if (parameters.isBase32Decode()) {
 			decodeBaseN(parameters, BASE32_ALPHABET, BASE32_EXTENSION);
 		} else if (parameters.isBaseNDecode()) {
 			decodeBaseN(parameters, null, BASEN_EXTENSION);
 		} else if (parameters.isBaseNEncode()) {
-			encodeBaseN(parameters, parameters.getBaseNEncodeAlphabet(), BASEN_EXTENSION);
+			encodeBaseN(parameters, parameters.getBaseNEncodeAlphabet(), BASEN_EXTENSION, true);
 		} else /* Bildkonvertierung */ {
 			convertImage(parameters);
 		}
@@ -102,8 +102,8 @@ public class ImageConverter {
 		}
 	}
 
-	private static void encodeBaseN(final CliParameters parameters, final char[] alphabet, final String extension)
-			throws IOException {
+	private static void encodeBaseN(final CliParameters parameters, final char[] alphabet, final String extension,
+			final boolean writeAlphabet) throws IOException {
 		final Path inputFile = parameters.getInputFile();
 		if (inputFile == null) {
 			throw new ParameterException("Input-File wurde nicht angegeben");
@@ -113,7 +113,7 @@ public class ImageConverter {
 
 		final BufferedInputStream in = new BufferedInputStream(Files.newInputStream(inputFile), 1024);
 		final BaseNOutputStream baseNOutputStream = new BaseNOutputStream(
-				new BufferedOutputStream(Files.newOutputStream(outputFile), 1024), alphabet);
+				new BufferedOutputStream(Files.newOutputStream(outputFile), 1024), alphabet, writeAlphabet);
 
 		int read;
 		while ((read = in.read()) >= 0) {
