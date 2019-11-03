@@ -203,6 +203,15 @@ public class CliParameters {
 	}
 
 	/**
+	 * Gibt an, ob das Base-N-Encode Alphabet gesetzt ist
+	 *
+	 * @return true oder false
+	 */
+	public boolean isBaseNEncode() {
+		return this.getBaseNEncodeAlphabet() != null;
+	}
+
+	/**
 	 * Gibt an, ob das Base-N-Encode Alphabet
 	 *
 	 * @return true oder false
