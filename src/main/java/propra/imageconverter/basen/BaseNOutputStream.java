@@ -59,7 +59,6 @@ public class BaseNOutputStream extends OutputStream {
 	    throw new IOException("Stream already closed");
 	}
 	b = b & 0xFF;
-	// TODO BaseN-write
 
 	for (int i = 7; i >= 0; i--) {
 	    final boolean charBit = MathUtils.getBit(b, i);
