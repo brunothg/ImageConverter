@@ -105,7 +105,6 @@ public class BaseNInputStream extends InputStream {
 	    }
 	}
 
-	System.out.println(returnValue + " - " + ((char) (int) returnValue));
 	return returnValue;
     }
 
