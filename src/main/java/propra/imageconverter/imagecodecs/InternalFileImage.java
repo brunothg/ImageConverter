@@ -5,13 +5,16 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 
-// TODO Puffern
 /**
+ * Dateigepufferetes {@link InternalImage}. Der Puffer arbeitet nur effizient,
+ * wenn von oben links nach unten rechts gelesen/geschrieben wird.
  *
  * @author marvin
  *
@@ -20,26 +23,43 @@ public class InternalFileImage implements InternalImage {
 
 	private final Dimension size;
 	private final Path tempFile;
-	private final RandomAccessFile raFile;
+	private final FileChannel raFile;
+
+	private final ByteBuffer writeBuffer;
+	private Point writeBufferStart = null;
+
+	private final ByteBuffer readBuffer;
+	private Point readBufferStart = null;
 
 	public InternalFileImage(final Dimension size) throws IOException {
 		this.size = Objects.requireNonNull(size, "size");
 
 		this.tempFile = Files.createTempFile("propra", "internal");
+		System.out.println(this.tempFile);
 		try {
-			this.raFile = new RandomAccessFile(this.tempFile.toFile(), "rw");
+			this.raFile = FileChannel.open(this.tempFile, StandardOpenOption.CREATE, StandardOpenOption.READ,
+					StandardOpenOption.WRITE, StandardOpenOption.DELETE_ON_CLOSE);
 		} catch (final IOException e) {
 			Files.deleteIfExists(this.tempFile);
 			throw e;
 		}
 		try {
-			this.raFile.setLength(size.width * size.height * 3);
+			long fileSize = size.width * size.height * 3;
+			this.raFile.position(0);
+			while (fileSize > 0) {
+				final int byteSize = (int) Math.min(1024, fileSize);
+				this.raFile.write(ByteBuffer.allocate(byteSize));
+				fileSize -= byteSize;
+			}
+
 		} catch (final IOException e) {
 			this.raFile.close();
 			Files.deleteIfExists(this.tempFile);
 			throw e;
 		}
 
+		this.writeBuffer = ByteBuffer.allocateDirect(1024 * 3);
+		this.readBuffer = ByteBuffer.allocateDirect(1024 * 3);
 	}
 
 	@Override
@@ -62,37 +82,36 @@ public class InternalFileImage implements InternalImage {
 			throw new RuntimeException("Illegale Koordinate: " + p);
 		}
 
-		try {
-			this.gotoPosition(p);
-			this.raFile.write(new byte[] { (byte) c.getRed(), (byte) c.getGreen(), (byte) c.getBlue() });
-		} catch (final IOException e) {
-			throw new RuntimeException(e);
+		final boolean validNextBufferPos = (this.writeBufferStart == null)
+				|| ((this.pointToIndex(this.writeBufferStart) + this.writeBuffer.position()) == this.pointToIndex(p));
+		if (!validNextBufferPos || ((this.writeBuffer.capacity() - this.writeBuffer.position()) < 3)) {
+			this.flushPixel();
 		}
+
+		if (this.writeBufferStart == null) {
+			this.writeBuffer.clear();
+			this.writeBufferStart = new Point(p.x, p.y);
+		}
+		this.writeBuffer.put(new byte[] { (byte) c.getRed(), (byte) c.getGreen(), (byte) c.getBlue() });
 	}
 
-	@Override
-	public void setPixels(final Point p, final Color[] cs, final int start, final int anz) {
-		if ((start < 0) || (anz > cs.length)) {
-			throw new RuntimeException("start '" + start + "' und anz '" + anz + "' passen nicht zum array");
-		}
-		if (!this.isValidPoint(p)) {
-			throw new RuntimeException("Illegale Koordinate: " + p);
+	private void flushPixel() {
+		if (this.writeBuffer.position() <= 0) {
+			return;
 		}
 
+		this.writeBuffer.limit(this.writeBuffer.position());
 		try {
-			this.gotoPosition(p);
+			final long index = this.pointToIndex(this.writeBufferStart);
+			this.raFile.position(index);
 
-			final byte[] bytes = new byte[anz * 3];
-			for (int i = start; (i < cs.length) && (i < (start + anz)); i++) {
-				bytes[(i * 3) + 0] = (byte) cs[i].getRed();
-				bytes[(i * 3) + 1] = (byte) cs[i].getGreen();
-				bytes[(i * 3) + 2] = (byte) cs[i].getBlue();
-			}
-
-			this.raFile.write(bytes);
+			this.writeBuffer.position(0);
+			this.raFile.write(this.writeBuffer);
 		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
+		this.writeBuffer.clear();
+		this.writeBufferStart = null;
 	}
 
 	@Override
@@ -100,53 +119,44 @@ public class InternalFileImage implements InternalImage {
 		if (!this.isValidPoint(p)) {
 			throw new RuntimeException("Illegale Koordinate: " + p);
 		}
+		this.flushPixel();
+
+		if (this.readBufferStart != null) {
+			final long bufferStartIndex = this.pointToIndex(this.readBufferStart);
+			final long pIndex = this.pointToIndex(p);
+			final long bufferIndex = pIndex - bufferStartIndex;
+
+			if ((bufferIndex >= 0) && (bufferIndex <= (this.readBuffer.position() - 3))) {
+				final int r = Byte.toUnsignedInt(this.readBuffer.get((int) bufferIndex));
+				final int g = Byte.toUnsignedInt(this.readBuffer.get((int) bufferIndex + 1));
+				final int b = Byte.toUnsignedInt(this.readBuffer.get((int) bufferIndex + 2));
+
+				return new Color(r, g, b);
+			}
+		}
 
 		try {
-			this.gotoPosition(p);
+			do {
+				this.readBuffer.clear();
+				this.readBufferStart = new Point(p.x, p.y);
+				this.raFile.position(this.pointToIndex(p));
+			} while (this.raFile.read(this.readBuffer) <= 0);
 
-			final byte[] colorBytes = new byte[3];
-			this.raFile.readFully(colorBytes);
-
-			final int r = Byte.toUnsignedInt(colorBytes[0]);
-			final int g = Byte.toUnsignedInt(colorBytes[1]);
-			final int b = Byte.toUnsignedInt(colorBytes[2]);
+			final int r = Byte.toUnsignedInt(this.readBuffer.get(0));
+			final int g = Byte.toUnsignedInt(this.readBuffer.get(1));
+			final int b = Byte.toUnsignedInt(this.readBuffer.get(2));
 
 			return new Color(r, g, b);
 		} catch (final IOException e) {
+			this.readBuffer.clear();
+			this.readBufferStart = null;
 			throw new RuntimeException(e);
 		}
 	}
 
-	@Override
-	public Color[] getPixels(final Point p, final int count) {
-		if (!this.isValidPoint(p)) {
-			throw new RuntimeException("Illegale Koordinate: " + p);
-		}
-
-		try {
-			this.gotoPosition(p);
-			final Color[] colors = new Color[count];
-
-			final byte[] colorBytes = new byte[count * 3];
-			this.raFile.readFully(colorBytes);
-
-			for (int i = 0; i < colors.length; i++) {
-				final int r = Byte.toUnsignedInt(colorBytes[(i * 3) + 0]);
-				final int g = Byte.toUnsignedInt(colorBytes[(i * 3) + 1]);
-				final int b = Byte.toUnsignedInt(colorBytes[(i * 3) + 2]);
-				colors[i] = new Color(r, g, b);
-			}
-
-			return colors;
-		} catch (final IOException e) {
-			throw new RuntimeException(e);
-		}
-
-	}
-
-	private void gotoPosition(final Point p) throws IOException {
-		final long pos = ((p.y * p.x) + p.x)/* Index */ * 3;
-		this.raFile.seek(pos);
+	private long pointToIndex(final Point p) {
+		final long pos = ((p.y * this.getSize().width) + p.x)/* Index */ * 3;
+		return pos;
 	}
 
 	@Override
