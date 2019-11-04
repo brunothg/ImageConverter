@@ -30,23 +30,23 @@ public class BaseNOutputStream extends OutputStream {
 	this(out, alphabet, writeAlphabet, StandardCharsets.UTF_8);
     }
 
-    public BaseNOutputStream(final OutputStream out, final char[] alphabet, final boolean writeAlphabet,
+    public BaseNOutputStream(final OutputStream out, final char[] alp, final boolean writeAlphabet,
 	    final Charset charset) {
-	if (alphabet.length > 256) {
-	    throw new RuntimeException("Alphabet ist zu lang. Max 256 Zeichen: " + alphabet.length);
+	if (alp.length > 256) {
+	    throw new RuntimeException("Alphabet ist zu lang. Max 256 Zeichen: " + alp.length);
 	}
-	if (ArrayUtils.hasDuplicates(alphabet)) {
-	    throw new RuntimeException("Alphabet enthält doppelte Zeichen: " + new String(alphabet));
+	if (ArrayUtils.hasDuplicates(alp)) {
+	    throw new RuntimeException("Alphabet enthält doppelte Zeichen: " + new String(alp));
 	}
 
-	this.alphabet = alphabet;
+	this.alphabet = alp;
 	this.out = new OutputStreamWriter(out, charset);
 
 	this.bitCountPerChar = (int) MathUtils.log2(this.alphabet.length);
 
 	if (writeAlphabet) {
 	    try {
-		this.out.write(new String(alphabet) + "\n");
+		this.out.write(new String(this.alphabet) + "\n");
 	    } catch (final IOException e) {
 		throw new RuntimeException("Alphabet konnte nicht geschrieben werden", e);
 	    }

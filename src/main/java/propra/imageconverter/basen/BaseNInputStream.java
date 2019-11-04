@@ -39,11 +39,11 @@ public class BaseNInputStream extends InputStream {
 	this(in, alphabet, StandardCharsets.UTF_8);
     }
 
-    public BaseNInputStream(final InputStream in, final char[] alphabet, final Charset charset) {
+    public BaseNInputStream(final InputStream in, final char[] alp, final Charset charset) {
 	this.in = new BufferedReader(new InputStreamReader(in, charset), 1024);
 
-	if (alphabet != null) {
-	    this.alphabet = alphabet;
+	if (alp != null) {
+	    this.alphabet = alp;
 	} else {
 	    try {
 		this.alphabet = this.in.readLine().toCharArray();
@@ -51,11 +51,11 @@ public class BaseNInputStream extends InputStream {
 		throw new RuntimeException("Alphabet konnte nicht ermittelt werden", e);
 	    }
 	}
-	if (alphabet.length > 256) {
-	    throw new RuntimeException("Alphabet ist zu lang. Max 256 Zeichen: " + alphabet.length);
+	if (this.alphabet.length > 256) {
+	    throw new RuntimeException("Alphabet ist zu lang. Max 256 Zeichen: " + this.alphabet.length);
 	}
-	if (ArrayUtils.hasDuplicates(alphabet)) {
-	    throw new RuntimeException("Alphabet enthält doppelte Zeichen: " + new String(alphabet));
+	if (ArrayUtils.hasDuplicates(this.alphabet)) {
+	    throw new RuntimeException("Alphabet enthält doppelte Zeichen: " + new String(this.alphabet));
 	}
 
 	this.bitCountPerChar = (int) MathUtils.log2(this.alphabet.length);
