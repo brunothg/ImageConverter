@@ -35,7 +35,6 @@ public class InternalFileImage implements InternalImage {
 		this.size = Objects.requireNonNull(size, "size");
 
 		this.tempFile = Files.createTempFile("propra", "internal");
-		System.out.println(this.tempFile);
 		try {
 			this.raFile = FileChannel.open(this.tempFile, StandardOpenOption.CREATE, StandardOpenOption.READ,
 					StandardOpenOption.WRITE, StandardOpenOption.DELETE_ON_CLOSE);
