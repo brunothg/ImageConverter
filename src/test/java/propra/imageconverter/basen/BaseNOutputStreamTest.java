@@ -20,7 +20,7 @@ public class BaseNOutputStreamTest {
     public void testBase32() throws Exception {
 	assertEquals("CO", encode("f", ALPHABET_BASE32));
 	assertEquals("CPNG", encode("fo", ALPHABET_BASE32));
-	assertEquals("CCPNMU", encode("foo", ALPHABET_BASE32));
+	assertEquals("CPNMU", encode("foo", ALPHABET_BASE32));
 	assertEquals("CPNMUOG", encode("foob", ALPHABET_BASE32));
 	assertEquals("CPNMUOJ1", encode("fooba", ALPHABET_BASE32));
 	assertEquals("CPNMUOJ1E8", encode("foobar", ALPHABET_BASE32));

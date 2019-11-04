@@ -6,8 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
-import java.util.Queue;
 
 import propra.imageconverter.utils.ArrayUtils;
 import propra.imageconverter.utils.MathUtils;
@@ -21,12 +19,12 @@ import propra.imageconverter.utils.MathUtils;
 public class BaseNInputStream extends InputStream {
 
     private final char[] alphabet;
-    private final long bitCountPerChar;
+    private final int bitCountPerChar;
     private final BufferedReader in;
 
-    private final Queue<Byte> bytes = new LinkedList<>();
-    private final int bitBuffer = 0;
-    private final int bitBufferSize = 0;
+    private int bitBuffer = 0;
+    private int bitBufferSize = 0;
+    private boolean eof = false;
 
     /**
      * Das Alphabet wir automatisch ermittelt (erste Zeile des Streams)
@@ -60,27 +58,55 @@ public class BaseNInputStream extends InputStream {
 	    throw new RuntimeException("Alphabet enthält doppelte Zeichen: " + new String(alphabet));
 	}
 
-	this.bitCountPerChar = MathUtils.log2(this.alphabet.length);
+	this.bitCountPerChar = (int) MathUtils.log2(this.alphabet.length);
     }
 
     @Override
     public int read() throws IOException {
 	// TODO BaseN-read
-
-	// Versuche mindestens ein byte zu lesen
-	while (this.bytes.isEmpty()) {
-	    final char c = (char) this.in.read();
-	    final int index = getAlphabetIndex(c);
-
-	    break;
-	}
-
-	// Versuche byte zurückzugeben
-	if (this.bytes.isEmpty()) {
+	if (this.eof) {
 	    return -1;
-	} else {
-	    return this.bytes.poll();
 	}
+
+	// Falls noch ein volles byte vorhanden ist
+	if (this.bitBufferSize >= 8) {
+	    final int returnValue = this.bitBuffer & 0xFF;
+
+	    this.bitBufferSize = 0;
+	    this.bitBuffer = 0;
+
+	    return returnValue;
+	}
+
+	// Sonst lese bis ein volles byte da ist
+	Integer returnValue = null;
+	while (returnValue == null) {
+	    final int read = this.in.read();
+	    if (read == -1) {
+		this.eof = true;
+		return -1;
+	    }
+
+	    final char c = (char) read;
+	    final int cValue = getAlphabetIndex(c);
+
+	    for (int i = this.bitCountPerChar - 1; i >= 0; i--) {
+		final boolean charBit = MathUtils.getBit(cValue, i);
+
+		this.bitBuffer = MathUtils.setBit(this.bitBuffer, 7 - this.bitBufferSize, charBit);
+		this.bitBufferSize++;
+
+		if (this.bitBufferSize >= 8) {
+		    returnValue = (this.bitBuffer & 0xFF);
+
+		    this.bitBufferSize = 0;
+		    this.bitBuffer = 0;
+		}
+	    }
+	}
+
+	System.out.println(returnValue + " - " + ((char) (int) returnValue));
+	return returnValue;
     }
 
     /**
