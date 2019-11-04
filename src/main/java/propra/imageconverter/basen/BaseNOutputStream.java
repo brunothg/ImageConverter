@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import propra.imageconverter.utils.MathUtils;
 
@@ -16,38 +17,39 @@ import propra.imageconverter.utils.MathUtils;
  */
 public class BaseNOutputStream extends OutputStream {
 
-	private Writer out;
-	private char[] alphabet;
-	private long bitCountPerChar;
+    private final Writer out;
+    private final char[] alphabet;
+    private final long bitCountPerChar;
 
-	public BaseNOutputStream(final OutputStream out, final char[] alphabet, final boolean writeAlphabet) {
+    public BaseNOutputStream(final OutputStream out, final char[] alphabet, final boolean writeAlphabet) {
+	this(out, alphabet, writeAlphabet, StandardCharsets.UTF_8);
+    }
+
+    public BaseNOutputStream(final OutputStream out, final char[] alphabet, final boolean writeAlphabet,
+	    final Charset charset) {
+	this.alphabet = alphabet;
+	this.out = new OutputStreamWriter(out, charset);
+
+	this.bitCountPerChar = MathUtils.log2(this.alphabet.length);
+
+	if (writeAlphabet) {
+	    try {
+		this.out.write(new String(alphabet) + "\n");
+	    } catch (final IOException e) {
+		throw new RuntimeException("Alphabet konnte nicht geschrieben werden", e);
+	    }
 	}
+    }
 
-	public BaseNOutputStream(final OutputStream out, final char[] alphabet, final boolean writeAlphabet,
-			final Charset charset) {
-		this.alphabet = alphabet;
-		this.out = new OutputStreamWriter(out, charset);
+    @Override
+    public void write(final int b) throws IOException {
+	// TODO BaseN-write
 
-		this.bitCountPerChar = MathUtils.log2(this.alphabet.length);
+    }
 
-		if (writeAlphabet) {
-			try {
-				this.out.write(new String(alphabet) + "\n");
-			} catch (final IOException e) {
-				throw new RuntimeException("Alphabet konnte nicht geschrieben werden", e);
-			}
-		}
-	}
-
-	@Override
-	public void write(final int b) throws IOException {
-		// TODO BaseN-write
-
-	}
-
-	@Override
-	public void close() throws IOException {
-		this.out.close();
-	}
+    @Override
+    public void close() throws IOException {
+	this.out.close();
+    }
 
 }
