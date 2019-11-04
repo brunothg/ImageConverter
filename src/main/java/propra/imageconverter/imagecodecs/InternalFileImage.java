@@ -14,7 +14,12 @@ import java.util.Objects;
 
 /**
  * Dateigepufferetes {@link InternalImage}. Der Puffer arbeitet nur effizient,
- * wenn von oben links nach unten rechts gelesen/geschrieben wird.
+ * wenn von oben links nach unten rechts gelesen/geschrieben und nicht häufig
+ * zwischen lesen/schreiben gewechselt wird.
+ *
+ * Es wird ein temporäres File über einen {@link FileChannel} genutzt. Damit
+ * beschränkt sich die maximale Dateigröße auf den verfügbaren
+ * Festplattenspeicher.
  *
  * @author marvin
  *
@@ -81,19 +86,29 @@ public class InternalFileImage implements InternalImage {
 			throw new RuntimeException("Illegale Koordinate: " + p);
 		}
 
+		// Ist Koordinate neu oder ein direkter Nachfolger des zuletzt in den Puffer
+		// geschriebenen Pixels
 		final boolean validNextBufferPos = (this.writeBufferStart == null)
 				|| ((this.pointToIndex(this.writeBufferStart) + this.writeBuffer.position()) == this.pointToIndex(p));
+
+		// Kein gültiger Pixel für den Puffer oder Puffer zu klein
 		if (!validNextBufferPos || ((this.writeBuffer.capacity() - this.writeBuffer.position()) < 3)) {
 			this.flushPixel();
 		}
 
+		// Neuer Puffer Start
 		if (this.writeBufferStart == null) {
 			this.writeBuffer.clear();
 			this.writeBufferStart = new Point(p.x, p.y);
 		}
+
+		// Schreibe Pixel in den Puffer
 		this.writeBuffer.put(new byte[] { (byte) c.getRed(), (byte) c.getGreen(), (byte) c.getBlue() });
 	}
 
+	/**
+	 * Schreibe gepufferte Pixel in die Datei
+	 */
 	private void flushPixel() {
 		if (this.writeBuffer.position() <= 0) {
 			return;
@@ -120,6 +135,7 @@ public class InternalFileImage implements InternalImage {
 		}
 		this.flushPixel();
 
+		// Versuche Pixel aus dem Puffer zu lesen
 		if (this.readBufferStart != null) {
 			final long bufferStartIndex = this.pointToIndex(this.readBufferStart);
 			final long pIndex = this.pointToIndex(p);
@@ -134,6 +150,7 @@ public class InternalFileImage implements InternalImage {
 			}
 		}
 
+		// Lese neue Pixel (inkl. gesuchtem) ein
 		try {
 			do {
 				this.readBuffer.clear();
@@ -153,6 +170,13 @@ public class InternalFileImage implements InternalImage {
 		}
 	}
 
+	/**
+	 * Übersetzt eine Pixel-Koordinate in einen Datei-Index (wie bei einem
+	 * byte-Array)
+	 *
+	 * @param p
+	 * @return
+	 */
 	private long pointToIndex(final Point p) {
 		final long pos = ((p.y * this.getSize().width) + p.x)/* Index */ * 3;
 		return pos;
@@ -163,6 +187,13 @@ public class InternalFileImage implements InternalImage {
 		return this.size;
 	}
 
+	/**
+	 * Testet, ob die Koordinate innerhalb der Bildgröße ( {@link #getSize()} )
+	 * liegt.
+	 *
+	 * @param p
+	 * @return
+	 */
 	private boolean isValidPoint(final Point p) {
 		return ((p.x >= 0) && (p.x < this.getSize().width)) && ((p.y >= 0) && (p.y < this.getSize().height));
 	}
