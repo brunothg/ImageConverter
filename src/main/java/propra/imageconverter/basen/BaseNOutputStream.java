@@ -20,10 +20,11 @@ public class BaseNOutputStream extends OutputStream {
 
     private final Writer out;
     private final char[] alphabet;
-    private final long bitCountPerChar;
+    private final int bitCountPerChar;
 
-    private final int bitBuffer = 0;
-    private final int bitBufferSize = 0;
+    private int bitBuffer = 0;
+    private int bitBufferSize = 0;
+    private boolean eof = false;
 
     public BaseNOutputStream(final OutputStream out, final char[] alphabet, final boolean writeAlphabet) {
 	this(out, alphabet, writeAlphabet, StandardCharsets.UTF_8);
@@ -41,7 +42,7 @@ public class BaseNOutputStream extends OutputStream {
 	this.alphabet = alphabet;
 	this.out = new OutputStreamWriter(out, charset);
 
-	this.bitCountPerChar = MathUtils.log2(this.alphabet.length);
+	this.bitCountPerChar = (int) MathUtils.log2(this.alphabet.length);
 
 	if (writeAlphabet) {
 	    try {
@@ -53,13 +54,51 @@ public class BaseNOutputStream extends OutputStream {
     }
 
     @Override
-    public void write(final int b) throws IOException {
+    public void write(int b) throws IOException {
+	if (this.eof) {
+	    throw new IOException("Stream already closed");
+	}
+	b = b & 0xFF;
 	// TODO BaseN-write
 
+	for (int i = 7; i >= 0; i--) {
+	    final boolean charBit = MathUtils.getBit(b, i);
+
+	    this.bitBuffer = MathUtils.setBit(this.bitBuffer, (this.bitCountPerChar - 1) - this.bitBufferSize, charBit);
+	    this.bitBufferSize++;
+
+	    if (this.bitBufferSize >= this.bitCountPerChar) {
+		final int cValue = this.bitBuffer;
+		final char c = this.alphabet[cValue];
+
+		this.bitBufferSize = 0;
+		this.bitBuffer = 0;
+
+		this.out.write(c);
+	    }
+	}
     }
 
-    @Override
+    /**
+     * Beendet den Datenstrom. Schreibt ggf. verbleibende Restbytes.
+     * 
+     * @throws IOException
+     */
+    public void eof() throws IOException {
+	if (this.bitBufferSize > 0) {
+	    final int cValue = this.bitBuffer;
+	    final char c = this.alphabet[cValue];
+
+	    this.out.write(c);
+	}
+	this.eof = true;
+    }
+
+    /**
+     * Schließt diesen Stream und den übergebenen. Schreibt ggf. Restbytes.
+     */
     public void close() throws IOException {
+	eof();
 	this.out.close();
     }
 

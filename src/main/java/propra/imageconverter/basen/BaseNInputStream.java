@@ -63,7 +63,6 @@ public class BaseNInputStream extends InputStream {
 
     @Override
     public int read() throws IOException {
-	// TODO BaseN-read
 	if (this.eof) {
 	    return -1;
 	}
