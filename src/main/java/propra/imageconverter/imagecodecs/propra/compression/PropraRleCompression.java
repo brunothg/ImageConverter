@@ -162,6 +162,7 @@ public class PropraRleCompression extends PropraCompression {
 			this.x = 0;
 			this.y = 0;
 			this.eof = false;
+			this.newLine = false;
 
 			return new Point(this.x, this.y);
 		}
