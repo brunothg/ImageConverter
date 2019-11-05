@@ -64,8 +64,9 @@ public class PropraWriter implements Closeable {
 			// Versuche Pixeldaten in temp Datei zwischenzuspeichern, die Checksumme zu
 			// berechnen/schreiben und dann die Pixeldaten aus der temp Datei zu kopieren
 			final Path pixelDataTempFile = Files.createTempFile("propra", "imagedata");
-			if (!Files.isReadable(pixelDataTempFile) || !Files.isWritable(pixelDataTempFile)) {
-				Files.delete(pixelDataTempFile);
+			if ((pixelDataTempFile == null) || !Files.isReadable(pixelDataTempFile)
+					|| !Files.isWritable(pixelDataTempFile)) {
+				Files.deleteIfExists(pixelDataTempFile);
 				throw new IOException("Not readable and writeable");
 			}
 
