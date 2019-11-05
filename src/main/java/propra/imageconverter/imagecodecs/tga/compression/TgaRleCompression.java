@@ -94,7 +94,8 @@ public class TgaRleCompression extends TgaCompression {
 				actualColor = color;
 				colorCounter = 1;
 			} else {
-				if ((colorCounter < (0b0111111 + 1)) /* Max Counter 128 */ && (pixelPosition.x > 0) /* Neue Zeile */
+				if ((colorCounter < (0b01111111 + 1)) /* Max Counter 128 */
+						&& (!pixelLoop.isNewLine()) /* Keine neue Zeile */
 						&& actualColor.equals(color)) {
 					colorCounter++;
 				} else {
@@ -144,10 +145,15 @@ public class TgaRleCompression extends TgaCompression {
 
 		private int x;
 		private int y;
+		private boolean newLine;
 		private boolean eof;
 
 		public PixelLoop(final TgaPixelCompressionValues values) {
 			this.values = values;
+		}
+
+		public boolean isNewLine() {
+			return this.newLine;
 		}
 
 		/**
@@ -181,6 +187,7 @@ public class TgaRleCompression extends TgaCompression {
 			}
 
 			this.eof = false;
+			this.newLine = false;
 
 			return new Point(this.x, this.y);
 		}
@@ -194,6 +201,7 @@ public class TgaRleCompression extends TgaCompression {
 			if (this.eof) {
 				throw new ConversionException("No more Pixels");
 			}
+			this.newLine = false;
 
 			final VerticalOrigin verticalOrigin = this.values.imageAttributes.getVerticalOrigin();
 			final HorizontalOrigin horizontalOrigin = this.values.imageAttributes.getHorizontalOrigin();
@@ -203,6 +211,7 @@ public class TgaRleCompression extends TgaCompression {
 				this.x++;
 				if (this.x >= this.values.dimension.width) {
 					this.x = 0;
+					this.newLine = true;
 
 					switch (verticalOrigin) {
 					case Bottom:
@@ -229,6 +238,7 @@ public class TgaRleCompression extends TgaCompression {
 				this.x--;
 				if (this.x < 0) {
 					this.x = this.values.dimension.width - 1;
+					this.newLine = true;
 
 					switch (verticalOrigin) {
 					case Bottom:
