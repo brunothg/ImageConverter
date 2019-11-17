@@ -130,7 +130,7 @@ java -Xmx256m propra.imageconverter.ImageConverter --input=../KE2_TestBilder_opt
 wait
 
 java -Xmx256m propra.imageconverter.ImageConverter --input=../KE2_TestBilder_optional/test_grosses_bild.propra --output=../KE2_Konvertiert/test_grosses_bild.tga --compression=rle &
-
+# java -Xmx256m propra.imageconverter.ImageConverter --input=../KE2_TestBilder_optional/test_grosses_bild.propra --output=../KE2_Konvertiert/test_grosses_bild2.tga --compression=uncompressed &
 
 
 
