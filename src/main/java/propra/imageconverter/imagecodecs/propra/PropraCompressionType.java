@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import propra.imageconverter.imagecodecs.propra.compression.PropraCompression;
 import propra.imageconverter.imagecodecs.propra.compression.PropraNoCompression;
 import propra.imageconverter.imagecodecs.propra.compression.PropraRleCompression;
+import propra.imageconverter.imagecodecs.propra.compression.PropraHuffmanCompression;
 
 /**
  * Kompressionstyp eines ProPra Bildes
@@ -13,7 +14,8 @@ import propra.imageconverter.imagecodecs.propra.compression.PropraRleCompression
  *
  */
 public enum PropraCompressionType {
-	None(0, "uncompressed", PropraNoCompression.class), Rle(1, "rle", PropraRleCompression.class);
+	None(0, "uncompressed", PropraNoCompression.class), Rle(1, "rle", PropraRleCompression.class),
+	Huffman(2, "huffman", PropraHuffmanCompression.class);
 
 	/**
 	 * Id des Kompressionstyps nach der Spezifikation
