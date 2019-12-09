@@ -137,3 +137,44 @@ java -Xmx256m propra.imageconverter.ImageConverter --input=../KE2_TestBilder_opt
 wait
 cd ../..
 ls -l
+
+
+
+# Build Teil 3
+rm KE3_Bruns_Marvin.zip
+
+mkdir tmp
+mkdir tmp/src
+
+cp -r src/main/java/* tmp/src
+cp -r src/test/java/* tmp/test
+cd tmp
+zip -r KE3_Bruns_Marvin.zip src test
+mv KE3_Bruns_Marvin.zip ../
+cd ..
+
+rm -R tmp
+
+
+# Run
+rm -R KE3_Bruns_Marvin
+mkdir KE3_Bruns_Marvin
+cd KE3_Bruns_Marvin
+
+mkdir KE3_Konvertiert
+unzip ../KE3_Bruns_Marvin.zip
+unzip ../KE3_TestBilder.zip
+
+javac --source-path src src/propra/imageconverter/ImageConverter.java -d bin
+cd bin
+
+
+java -Xmx256m propra.imageconverter.ImageConverter --input=../KE3_TestBilder/test_01_uncompressed.tga  --output=../KE3_Konvertiert/test_01.propra --compression=rle
+java -Xmx256m propra.imageconverter.ImageConverter --input=../KE3_TestBilder/test_02_rle.tga           --output=../KE3_Konvertiert/test_02.propra --compression=uncompressed
+java -Xmx256m propra.imageconverter.ImageConverter --input=../KE3_TestBilder/test_03_uncompressed.propra --output=../KE3_Konvertiert/test_03.tga  --compression=rle
+java -Xmx256m propra.imageconverter.ImageConverter --input=../KE3_TestBilder/test_04_rle.propra          --output=../KE3_Konvertiert/test_04.tga  --compression=uncompressed
+java -Xmx256m propra.imageconverter.ImageConverter --input=../KE3_TestBilder/test_05_huffman.propra      --output=../KE3_Konvertiert/test_05.tga  --compression=rle
+
+wait
+cd ../..
+ls -l
