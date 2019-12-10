@@ -21,6 +21,11 @@ class HuffmanTree {
 		this.setValue(value);
 	}
 
+	/**
+	 * Gibt den Elternbaum
+	 *
+	 * @return Elternbaum oder null, wenn nicht vorhanden
+	 */
 	public HuffmanTree getParent() {
 		return this.parent;
 	}
@@ -29,43 +34,86 @@ class HuffmanTree {
 		this.parent = parent;
 	}
 
+	/**
+	 * Gibt den linken Teilbaum
+	 *
+	 * @return Linker Teilbaum oder null, wenn nicht vorhanden
+	 */
 	public HuffmanTree getLeftTree() {
 		return this.leftTree;
 	}
 
+	/**
+	 * Gibt den rechten Teilbaum
+	 *
+	 * @return Rechter Teilbaum oder null, wenn nicht vorhanden
+	 */
 	public HuffmanTree getRightTree() {
 		return this.rightTree;
 	}
 
+	/**
+	 * Setzt den linken Teilbaum. Löscht gegebenfalls vorhandenen Wert (Teilbaum
+	 * kann kein Blatt sein).
+	 *
+	 * @param leftTree
+	 */
 	public void setLeftTree(final HuffmanTree leftTree) {
 		this.leftTree = leftTree;
 		this.leftTree.setParent(this);
 		this.value = null;
 	}
 
+	/**
+	 * Setzt den rechten Teilbaum. Löscht gegebenfalls vorhandenen Wert (Teilbaum
+	 * kann kein Blatt sein).
+	 *
+	 * @param rightTree
+	 */
 	public void setRightTree(final HuffmanTree rightTree) {
 		this.rightTree = rightTree;
 		this.rightTree.setParent(this);
 		this.value = null;
 	}
 
+	/**
+	 * Gibt den Wert, wenn es sich um ein Blatt handelt
+	 *
+	 * @return Wert oder null, wenn kein Blatt
+	 */
 	public Integer getValue() {
 		return this.value;
 	}
 
+	/**
+	 * Setzt den Wert. Löscht linken und rechten Teilbaum (Blatt kann kein Teilbaum
+	 * sein)
+	 *
+	 * @param value
+	 */
 	private void setValue(final Integer value) {
 		this.value = (value == null) ? null : ((value) & 0xFF);
 		this.leftTree = null;
 		this.rightTree = null;
 	}
 
-	public void setLeftValue(final Integer newValue) {
-		this.leftTree = new HuffmanTree(newValue);
+	/**
+	 * Setzt das linke Blatt
+	 *
+	 * @param value
+	 */
+	public void setLeftValue(final Integer value) {
+		this.leftTree = new HuffmanTree(value);
 		this.leftTree.setParent(this);
 	}
 
-	public void setRightValue(final Integer newValue) {
-		this.rightTree = new HuffmanTree(newValue);
+	/**
+	 * Setzt das rechte Blatt
+	 *
+	 * @param value
+	 */
+	public void setRightValue(final Integer value) {
+		this.rightTree = new HuffmanTree(value);
 		this.leftTree.setParent(this);
 	}
 
