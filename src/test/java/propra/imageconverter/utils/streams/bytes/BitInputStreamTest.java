@@ -1,10 +1,12 @@
-package propra.imageconverter.utils;
+package propra.imageconverter.utils.streams.bytes;
 
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 
 import org.junit.Test;
+
+import propra.imageconverter.utils.streams.bytes.BitInputStream;
 
 public class BitInputStreamTest {
 

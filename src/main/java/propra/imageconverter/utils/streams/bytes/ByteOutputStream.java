@@ -1,4 +1,4 @@
-package propra.imageconverter.utils;
+package propra.imageconverter.utils.streams.bytes;
 
 import java.io.Closeable;
 import java.io.FilterOutputStream;

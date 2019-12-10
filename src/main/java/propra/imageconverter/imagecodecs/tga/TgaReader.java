@@ -17,7 +17,7 @@ import propra.imageconverter.imagecodecs.ConversionException;
 import propra.imageconverter.imagecodecs.InternalImage;
 import propra.imageconverter.imagecodecs.tga.compression.TgaCompression;
 import propra.imageconverter.imagecodecs.tga.compression.TgaCompression.TgaPixelDecodeValues;
-import propra.imageconverter.utils.ByteInputStream;;
+import propra.imageconverter.utils.streams.bytes.ByteInputStream;;
 
 /**
  * Klasse zum Lesen von Tga-Bildern

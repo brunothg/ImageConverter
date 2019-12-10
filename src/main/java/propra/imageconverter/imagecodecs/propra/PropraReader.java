@@ -16,8 +16,8 @@ import propra.imageconverter.imagecodecs.InternalImage;
 import propra.imageconverter.imagecodecs.propra.PropraChecksum.PropraChecksumInputStream;
 import propra.imageconverter.imagecodecs.propra.compression.PropraCompression;
 import propra.imageconverter.imagecodecs.propra.compression.PropraCompression.PropraPixelDecodeValues;
-import propra.imageconverter.utils.ByteInputStream;
-import propra.imageconverter.utils.LimitInputStream;
+import propra.imageconverter.utils.streams.bytes.ByteInputStream;
+import propra.imageconverter.utils.streams.bytes.LimitInputStream;
 
 /**
  *

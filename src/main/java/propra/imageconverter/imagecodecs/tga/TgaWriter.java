@@ -15,7 +15,7 @@ import propra.imageconverter.imagecodecs.tga.TgaImageAttributes.HorizontalOrigin
 import propra.imageconverter.imagecodecs.tga.TgaImageAttributes.VerticalOrigin;
 import propra.imageconverter.imagecodecs.tga.compression.TgaCompression;
 import propra.imageconverter.imagecodecs.tga.compression.TgaCompression.TgaPixelEncodeValues;
-import propra.imageconverter.utils.ByteOutputStream;
+import propra.imageconverter.utils.streams.bytes.ByteOutputStream;
 
 /**
  * Klasse zum Schreiben von Tga-Bildern

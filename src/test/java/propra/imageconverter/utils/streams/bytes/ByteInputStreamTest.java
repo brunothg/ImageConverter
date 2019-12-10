@@ -1,4 +1,4 @@
-package propra.imageconverter.utils;
+package propra.imageconverter.utils.streams.bytes;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -11,6 +11,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.junit.Test;
+
+import propra.imageconverter.utils.streams.bytes.ByteInputStream;
 
 public class ByteInputStreamTest {
 

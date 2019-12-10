@@ -1,4 +1,4 @@
-package propra.imageconverter.utils;
+package propra.imageconverter.utils.streams.bytes;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -84,4 +84,9 @@ public class BitInputStream extends InputStream {
 		return byteValue;
 	}
 
+	@Override
+	public void close() throws IOException {
+		super.close();
+		this.in.close();
+	}
 }
