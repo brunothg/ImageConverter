@@ -36,6 +36,12 @@ public class CounterOutputStream extends OutputStream {
 	}
 
 	@Override
+	public void flush() throws IOException {
+		super.flush();
+		this.out.flush();
+	}
+
+	@Override
 	public void close() throws IOException {
 		super.close();
 		this.out.close();

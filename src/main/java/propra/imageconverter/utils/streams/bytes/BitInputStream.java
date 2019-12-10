@@ -83,7 +83,6 @@ public class BitInputStream extends InputStream {
 
 	@Override
 	public void close() throws IOException {
-		super.close();
 		this.in.close();
 	}
 }
