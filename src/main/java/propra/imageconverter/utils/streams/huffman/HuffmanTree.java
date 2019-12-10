@@ -59,8 +59,14 @@ public class HuffmanTree {
 	 * @param leftTree
 	 */
 	public void setLeftTree(final HuffmanTree leftTree) {
+		if ((this.leftTree != null) && (this.leftTree.getParent() != null)) {
+			this.leftTree.setParent(null);
+		}
+
 		this.leftTree = leftTree;
-		this.leftTree.setParent(this);
+		if (this.leftTree != null) {
+			this.leftTree.setParent(this);
+		}
 		this.value = null;
 	}
 
@@ -71,8 +77,14 @@ public class HuffmanTree {
 	 * @param rightTree
 	 */
 	public void setRightTree(final HuffmanTree rightTree) {
+		if ((this.rightTree != null) && (this.rightTree.getParent() != null)) {
+			this.rightTree.setParent(null);
+		}
+
 		this.rightTree = rightTree;
-		this.rightTree.setParent(this);
+		if (this.rightTree != null) {
+			this.rightTree.setParent(this);
+		}
 		this.value = null;
 	}
 
@@ -92,9 +104,10 @@ public class HuffmanTree {
 	 * @param value
 	 */
 	private void setValue(final Integer value) {
+		this.setLeftTree(null);
+		this.setRightTree(null);
+
 		this.value = (value == null) ? null : ((value) & 0xFF);
-		this.leftTree = null;
-		this.rightTree = null;
 	}
 
 	/**
@@ -103,8 +116,7 @@ public class HuffmanTree {
 	 * @param value
 	 */
 	public void setLeftValue(final Integer value) {
-		this.leftTree = new HuffmanTree(value);
-		this.leftTree.setParent(this);
+		this.setLeftTree(new HuffmanTree(value));
 	}
 
 	/**
@@ -113,8 +125,7 @@ public class HuffmanTree {
 	 * @param value
 	 */
 	public void setRightValue(final Integer value) {
-		this.rightTree = new HuffmanTree(value);
-		this.leftTree.setParent(this);
+		this.setRightTree(new HuffmanTree(value));
 	}
 
 	@Override
