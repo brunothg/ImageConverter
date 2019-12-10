@@ -2,7 +2,7 @@ package propra.imageconverter.utils.streams.bytes;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,7 +18,7 @@ public class BitOutputStream extends OutputStream {
 
 	private final OutputStream out;
 
-	private final List<Short> bitBuffer = new ArrayList<>(8);
+	private final List<Short> bitBuffer = new LinkedList<>();
 
 	public BitOutputStream(final OutputStream out) {
 		this.out = Objects.requireNonNull(out, "out");

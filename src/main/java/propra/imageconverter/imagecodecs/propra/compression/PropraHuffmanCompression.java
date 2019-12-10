@@ -74,6 +74,7 @@ public class PropraHuffmanCompression extends PropraCompression {
 		} catch (final IOException e) {
 			new ConversionException("Bits konnten nicht geschrieben werden", e);
 		}
+
 		return values;
 	}
 
