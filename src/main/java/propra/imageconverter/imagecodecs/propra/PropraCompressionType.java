@@ -15,7 +15,7 @@ import propra.imageconverter.imagecodecs.propra.compression.PropraHuffmanCompres
  */
 public enum PropraCompressionType {
 	None(0, "uncompressed", PropraNoCompression.class), Rle(1, "rle", PropraRleCompression.class),
-	Huffman(2, "huffman", PropraHuffmanCompression.class);
+	Huffman(2, "huffman", PropraHuffmanCompression.class), Auto(1, "auto", PropraRleCompression.class);
 
 	/**
 	 * Id des Kompressionstyps nach der Spezifikation

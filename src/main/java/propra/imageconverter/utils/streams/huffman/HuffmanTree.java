@@ -6,7 +6,7 @@ package propra.imageconverter.utils.streams.huffman;
  * @author marvin
  *
  */
-class HuffmanTree {
+public class HuffmanTree {
 
 	private HuffmanTree parent = null;
 	private HuffmanTree leftTree = null;
@@ -121,6 +121,33 @@ class HuffmanTree {
 	public String toString() {
 		return "HuffmanTree [" + "value=" + this.value + ", leftTree=" + this.leftTree + ", rightTree=" + this.rightTree
 				+ "]";
+	}
+
+	/**
+	 * Erstellt einen Huffman Baum, der alle 256 möglichen Byte-Werte enthält. Eine
+	 * Optimierung des Baums findet nicht statt.
+	 *
+	 * @return Vollständigen Huffman Baum
+	 */
+	public static HuffmanTree generateFullTree() {
+		final HuffmanTree huffmanTree = new HuffmanTree();
+
+		HuffmanTree actualTree = huffmanTree;
+		for (int i = 0; i < 256; i++) {
+			actualTree.setLeftValue(i);
+
+			final HuffmanTree newSubTree = new HuffmanTree();
+			actualTree.setRightTree(newSubTree);
+			actualTree = newSubTree;
+		}
+		if (actualTree.getLeftTree() == null) {
+			actualTree.setLeftValue(0);
+		}
+		if (actualTree.getRightTree() == null) {
+			actualTree.setRightValue(0);
+		}
+
+		return huffmanTree;
 	}
 
 }

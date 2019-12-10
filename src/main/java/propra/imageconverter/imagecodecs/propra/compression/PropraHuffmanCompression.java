@@ -8,6 +8,7 @@ import java.io.InputStream;
 import propra.imageconverter.imagecodecs.ConversionException;
 import propra.imageconverter.imagecodecs.InternalImage;
 import propra.imageconverter.utils.streams.huffman.HuffmanInputStream;
+import propra.imageconverter.utils.streams.huffman.HuffmanOutputStream;
 
 /**
  * Liest/Schreibt Pixeldaten mit Huffman Kompremierung
@@ -50,10 +51,30 @@ public class PropraHuffmanCompression extends PropraCompression {
 		return values;
 	}
 
+	@SuppressWarnings("resource")
 	@Override
 	public PropraPixelEncodeValues compressPixelData(final PropraPixelEncodeValues values) throws ConversionException {
-		throw new RuntimeException("PropraHuffmanCompression - uncompressPixelData - not yet implemented");
-		// TODO compressPixelData
+		final HuffmanOutputStream out = new HuffmanOutputStream(values.compressedPixelData);
+
+		for (int y = 0; y < values.dimension.height; y++) {
+			for (int x = 0; x < values.dimension.width; x++) {
+
+				final Color color = values.uncompressedPixelData.getPixel(new Point(x, y));
+
+				try {
+					out.write(new byte[] { (byte) color.getGreen(), (byte) color.getBlue(), (byte) color.getRed() });
+				} catch (final IOException e) {
+					throw new ConversionException("Pixeldaten können nicht geschrieben werden: " + e.getMessage(), e);
+				}
+			}
+		}
+
+		try {
+			out.flushBitBuffer();
+		} catch (final IOException e) {
+			new ConversionException("Bits konnten nicht geschrieben werden", e);
+		}
+		return values;
 	}
 
 }

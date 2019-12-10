@@ -22,7 +22,9 @@ public enum TgaImageType {
 	/**
 	 * RGB (24 Bit) lauflängenkodiert
 	 */
-	Rle(10, "rle", TgaRleCompression.class);
+	Rle(10, "rle", TgaRleCompression.class),
+
+	Auto(10, "auto", TgaRleCompression.class);
 
 	/**
 	 * Id des Bildtyp nach der Spezifikation
