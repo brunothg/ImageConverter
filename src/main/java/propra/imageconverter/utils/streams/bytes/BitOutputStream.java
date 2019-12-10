@@ -46,6 +46,15 @@ public class BitOutputStream extends OutputStream {
 		}
 	}
 
+	/**
+	 * @see #writeBit(short)
+	 * @param bit
+	 * @throws IOException
+	 */
+	public void writeBit(final int bit) throws IOException {
+		this.writeBit((short) bit);
+	}
+
 	@Override
 	public void write(final int byteValue) throws IOException {
 		// Byte in bits zerlegen
