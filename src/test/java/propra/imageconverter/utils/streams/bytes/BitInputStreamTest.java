@@ -103,9 +103,7 @@ public class BitInputStreamTest {
 //		assertEquals(1, in.readBit());
 //		assertEquals(1, in.readBit());
 //		assertEquals(1, in.readBit());
-		assertEquals(0b10111000, in.read());
-
-		assertEquals(-1, in.readBit());
+		assertEquals(-1, in.read());
 
 		in.close();
 	}

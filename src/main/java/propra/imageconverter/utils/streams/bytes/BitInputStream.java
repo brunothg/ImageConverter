@@ -58,23 +58,20 @@ public class BitInputStream extends InputStream {
 	}
 
 	/**
-	 * Liest ein ganzes byte. Wenn kein ganzes byte mehr vorhanden ist, werden die
-	 * fehlenden Bits (die unteren) mit 0 gefüllt
+	 * Liest ein ganzes byte.
 	 *
-	 * @return ein ganzes byte bzw. -1, wenn der Stream zu Ende ist
+	 * @return ein ganzes byte bzw. -1, wenn der Stream zu Ende ist, bevor das byte
+	 *         vollständig gelesen wurde
 	 */
 	@Override
 	public int read() throws IOException {
 		int byteValue = 0;
 
 		for (int i = 0; i < 8; i++) {
-			short bit = this.readBit();
-			if (bit <= -1) {
-				if (i <= 0) {
-					byteValue = -1;
-					break;
-				}
-				bit = 0;
+			final short bit = this.readBit();
+			if (bit == -1) {
+				byteValue = -1;
+				break;
 			}
 
 			byteValue = byteValue << 1;
