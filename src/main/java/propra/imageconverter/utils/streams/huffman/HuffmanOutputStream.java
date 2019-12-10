@@ -106,6 +106,10 @@ public class HuffmanOutputStream extends OutputStream {
 		final int byteValue = b & 0xFF;
 
 		final short[] symbolPathBits = this.symbols[byteValue];
+		if (symbolPathBits.length <= 0) {
+			throw new RuntimeException("Missing symbol: " + byteValue);
+		}
+
 		for (final short symbolPathBit : symbolPathBits) {
 			this.out.writeBit(symbolPathBit);
 		}

@@ -72,7 +72,7 @@ public class PropraWriter implements Closeable {
 
 			try {
 				final CounterOutputStream counterOutputStream = new CounterOutputStream(
-						Files.newOutputStream(pixelDataTempFile));
+						new BufferedOutputStream(Files.newOutputStream(pixelDataTempFile), 1024));
 				final PropraChecksumOutputStream propraChecksumOutputStream = new PropraChecksum.PropraChecksumOutputStream(
 						counterOutputStream);
 				final OutputStream pixelDataOutputStream = propraChecksumOutputStream;
