@@ -89,7 +89,7 @@ public class HuffmanTree {
 	}
 
 	/**
-	 * Gibt den Wert, wenn es sich um ein Blatt handelt
+	 * Gibt den Wert (0-255), wenn es sich um ein Blatt handelt
 	 *
 	 * @return Wert oder null, wenn kein Blatt
 	 */
@@ -98,8 +98,8 @@ public class HuffmanTree {
 	}
 
 	/**
-	 * Setzt den Wert. Löscht linken und rechten Teilbaum (Blatt kann kein Teilbaum
-	 * sein)
+	 * Setzt den Wert (0-255). Löscht linken und rechten Teilbaum (Blatt kann kein
+	 * Teilbaum sein)
 	 *
 	 * @param value
 	 */
