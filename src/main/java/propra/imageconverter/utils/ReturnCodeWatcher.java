@@ -36,7 +36,7 @@ public class ReturnCodeWatcher {
 
 			// Fehlernachricht ausgeben
 			System.err.println(t.getClass().getSimpleName() + ": " + t.getMessage());
-			t.printStackTrace();
+//			t.printStackTrace();
 
 			// Programm mit Fehlercode beenden
 			final ReturnCode returnCode = t.getClass().getAnnotation(ReturnCode.class);
