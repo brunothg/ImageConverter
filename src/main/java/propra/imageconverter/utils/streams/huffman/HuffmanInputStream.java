@@ -65,10 +65,10 @@ public class HuffmanInputStream extends InputStream {
 
 				// Baum zurücklaufen, bis links oder rechts ein freie Platz vorhanden ist oder
 				// der Baum komplett ist
-				do {
+				while ((actualTree != null) && (actualTree.getLeftTree() != null)
+						&& (actualTree.getRightTree() != null)) {
 					actualTree = actualTree.getParent();
-				} while ((actualTree != null) && (actualTree.getLeftTree() != null)
-						&& (actualTree.getRightTree() != null));
+				}
 				if (actualTree == null) {
 					break;
 				}

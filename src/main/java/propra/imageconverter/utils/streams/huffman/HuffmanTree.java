@@ -69,4 +69,10 @@ class HuffmanTree {
 		this.leftTree.setParent(this);
 	}
 
+	@Override
+	public String toString() {
+		return "HuffmanTree [" + "value=" + this.value + ", leftTree=" + this.leftTree + ", rightTree=" + this.rightTree
+				+ "]";
+	}
+
 }
