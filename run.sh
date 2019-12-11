@@ -174,6 +174,8 @@ java -Xmx256m propra.imageconverter.ImageConverter --input=../KE3_TestBilder/tes
 java -Xmx256m propra.imageconverter.ImageConverter --input=../KE3_TestBilder/test_03_uncompressed.propra --output=../KE3_Konvertiert/test_03.tga  --compression=rle
 java -Xmx256m propra.imageconverter.ImageConverter --input=../KE3_TestBilder/test_04_rle.propra          --output=../KE3_Konvertiert/test_04.tga  --compression=uncompressed
 java -Xmx256m propra.imageconverter.ImageConverter --input=../KE3_TestBilder/test_05_huffman.propra      --output=../KE3_Konvertiert/test_05.tga  --compression=rle
+java -Xmx256m propra.imageconverter.ImageConverter --input=../KE3_Konvertiert/test_05.tga      --output=../KE3_Konvertiert/test_05_rehuf.propra  --compression=huffman
+java -Xmx256m propra.imageconverter.ImageConverter --input=../KE3_Konvertiert/test_05_rehuf.propra      --output=../KE3_Konvertiert/test_05_rehuf.tga  --compression=uncompressed
 
 wait
 cd ../..
