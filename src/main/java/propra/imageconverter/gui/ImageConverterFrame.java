@@ -1,6 +1,11 @@
 package propra.imageconverter.gui;
 
 import java.awt.BorderLayout;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetAdapter;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
@@ -10,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,6 +72,37 @@ public class ImageConverterFrame extends JFrame {
 
 		this.lblImage = new JLabel();
 		sp.setViewportView(this.lblImage);
+
+		new DropTarget(this.lblImage, new DropTargetAdapter() {
+			@Override
+			public void drop(DropTargetDropEvent dtde) {
+				try {
+					final Transferable tr = dtde.getTransferable();
+					final DataFlavor[] flavors = tr.getTransferDataFlavors();
+					final ArrayList<File> fileNames = new ArrayList<>();
+					for (int i = 0; i < flavors.length; i++) {
+						if (flavors[i].isFlavorJavaFileListType()) {
+							dtde.acceptDrop(dtde.getDropAction());
+							@SuppressWarnings("unchecked")
+							final java.util.List<File> files = (java.util.List<File>) tr.getTransferData(flavors[i]);
+							for (int k = 0; k < files.size(); k++) {
+								fileNames.add(files.get(k));
+							}
+
+							if (fileNames.size() > 0) {
+								ImageConverterFrame.this.openImage(fileNames.get(0).toPath());
+							}
+
+							dtde.dropComplete(true);
+						}
+					}
+					return;
+				} catch (final Throwable t) {
+					t.printStackTrace();
+				}
+				dtde.rejectDrop();
+			}
+		});
 	}
 
 	private void createMenu() {
