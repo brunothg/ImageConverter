@@ -5,9 +5,14 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import propra.imageconverter.basen.BaseNInputStream;
 import propra.imageconverter.basen.BaseNOutputStream;
+import propra.imageconverter.gui.ImageConverterFrame;
 import propra.imageconverter.imagecodecs.ConversionException;
 import propra.imageconverter.imagecodecs.ImageCodec;
 import propra.imageconverter.imagecodecs.InternalImage;
@@ -55,6 +60,11 @@ public class ImageConverter {
 	 * @throws Exception Wenn ein Fehler auftritt
 	 */
 	private static void cmd(final String[] args) throws Exception {
+		if ((args == null) || (args.length <= 0)) {
+			openGui();
+			return;
+		}
+
 		final CliParameters parameters = new CliParameters();
 		parameters.parse(args);
 
@@ -70,6 +80,19 @@ public class ImageConverter {
 			convertImage(parameters);
 		}
 
+	}
+
+	private static void openGui() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
+		}
+
+		final ImageConverterFrame imageConverterFrame = new ImageConverterFrame();
+		imageConverterFrame.setSupportedCodecs(Arrays.asList(IMAGE_CODECS));
+		imageConverterFrame.setVisible(true);
 	}
 
 	private static void decodeBaseN(final CliParameters parameters, final char[] alphabet, final String extension)
